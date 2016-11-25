@@ -1,5 +1,5 @@
 #~/bin/python
- # -*- coding: utf-8 -*-
+
 from bs4 import BeautifulSoup
 import requests
 import sys
@@ -46,11 +46,11 @@ for opening in js_text:
 						print xtext
 						extraction = extraction + xtext + '\n'
 				else:
-					replacement = jsonp.replace('/pages/', '/images/').replace('jsonp', sys.argv[2])
+					replacement = jsonp.replace('/pages/', '/images/').replace('jsonp', 'jpg')
 					#print replacement
 					print 'Downloading page ' + str(train)
 					response = requests.get(replacement, stream=True)
-					with open(title + '/pic' + str(train) + '.' + sys.argv[2], 'wb') as out_file:
+					with open(title + '/pic' + str(train) + '.jpg', 'wb') as out_file:
 						shutil.copyfileobj(response.raw, out_file)
 					del response
 					train+=1
