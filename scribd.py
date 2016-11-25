@@ -1,18 +1,31 @@
 #~/bin/python
  # -*- coding: utf-8 -*-
 from bs4 import BeautifulSoup
-import json
 import requests
 import sys
+import shutil
+import os
+
+#print len(sys.argv)
+os.chdir(sys.path[0])
 
 response = requests.request(method='GET', url=sys.argv[1])
-#print len(sys.argv)
-pre_soup = response.text
+soup = BeautifulSoup(response.text, 'html.parser')
+extraction = ''
+train = 1
 
-soup = BeautifulSoup(pre_soup, 'html.parser')
-last_xtext = ''
+title = soup.find('title').get_text().replace(' ', '_')
+print soup.find('title').get_text()
 
-js_text = soup.find_all('script', type="text/javascript")
+if len(sys.argv) <=2:
+	if os.path.exists(title + '.txt'):
+		os.remove(title + '.txt')
+else:
+	if not os.path.exists(title):
+		os.makedirs(title)
+print
+
+js_text = soup.find_all('script', type='text/javascript')
 for opening in js_text:
 	for inner_opening in opening:
 		portion1 = inner_opening.find('https://')
@@ -23,13 +36,25 @@ for opening in js_text:
 				if len(sys.argv) <=2:
 					#print jsonp
 					response = requests.request(method='GET', url=jsonp)
-					soup_content = BeautifulSoup(response.text, 'html.parser')
-					for x in soup_content.find_all('span'):
+					page_no = response.text[11:12]
+					response_head =  (response.text).replace('window.page' + page_no + '_callback(["', '').replace('\\n', '').replace('\\', '').replace('"]);', '')
+					#print response_head
+					soup_content = BeautifulSoup(response_head, 'html.parser')
+					#print soup_content.get_text().encode('utf-8')
+					for x in soup_content.find_all('span', {'class':'a'}):
 						xtext = x.get_text().encode('utf-8')
-						if not xtext == '':
-							if not xtext == last_xtext:
-								print xtext
-							last_xtext = xtext
+						print xtext
+						extraction = extraction + xtext + '\n'
 				else:
-					replacement = jsonp.replace('/pages/', '/images/').replace('.jsonp', sys.argv[2])
-					print replacement
+					replacement = jsonp.replace('/pages/', '/images/').replace('jsonp', sys.argv[2])
+					#print replacement
+					print 'Downloading page ' + str(train)
+					response = requests.get(replacement, stream=True)
+					with open(title + '/pic' + str(train) + '.' + sys.argv[2], 'wb') as out_file:
+						shutil.copyfileobj(response.raw, out_file)
+					del response
+					train+=1
+
+if len(sys.argv) <=2:
+	with open(title + '.txt', 'w') as feed:
+		feed.write(extraction)
