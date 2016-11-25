@@ -32,7 +32,7 @@ Usage: `sudo python scribd.py <link of scribd document>`
 - example: `sudo python scribd.py https://www.scribd.com/document/55949937/33-Strategies-of-War`
 
 ◘ To download PDF's containing images; use the -p option:
-- example: sudo python scribd.py http://scribd.com/doc/17142797/Case-in-Point -p
+- example: `sudo python scribd.py http://scribd.com/doc/17142797/Case-in-Point -p`
 
 ## Disclaimer:
 
