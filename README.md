@@ -1,5 +1,9 @@
 # Scribd-Downloader
 
+## Introduction:
+
+◘ This python script allows downloading scribd documents.
+
 ◘ It does not matter if the pages are blurred and require authentication, this script will still do the job.
 
 ◘ There are two types of PDF's on Scribd:
