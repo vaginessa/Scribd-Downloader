@@ -26,7 +26,7 @@ sudo pip install -r requirements.txt
 sudo python scribd.py
 ```
 
-Usage: sudo python scribd.py <link of scribd document>'
+Usage: `sudo python scribd.py <link of scribd document>`
 
 ◘ To download text from PDF's containing selectable text:
 - example: `sudo python scribd.py https://www.scribd.com/document/55949937/33-Strategies-of-War`
