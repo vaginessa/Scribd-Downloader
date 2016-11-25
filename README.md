@@ -2,9 +2,9 @@
 
 ## Introduction:
 
-◘ This python script allows downloading scribd documents.
+◘ This python script allows downloading of Scribd documents.
 
-◘ It does not matter if the pages are blurred and require authentication, this script will still do the job.
+◘ It does not matter if the pages are blurred or require authentication, this script will still do the job.
 
 ◘ There are two types of PDF's on Scribd:
 
@@ -36,7 +36,7 @@ Usage: `sudo python scribd.py <link of scribd document>`
 
 ## Disclaimer:
 
-Download softcopies of books maybe prohibited. Please support the Authors by buying their titles.
+Download softcopies of books maybe prohibited. Please support the authors by buying their titles.
 
 ## License:
 
