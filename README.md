@@ -30,6 +30,7 @@ Usage: `sudo python scribd.py <link of scribd document>`
 
 ◘ To download text from PDF's containing selectable text:
 - example: `sudo python scribd.py https://www.scribd.com/document/55949937/33-Strategies-of-War`
+
 (wait for the text to load fully in the terminal only then a text file will be created containing the document)
 
 ◘ To download PDF's containing images; use the -p option:
