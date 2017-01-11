@@ -33,7 +33,7 @@ Usage: `sudo python scribd.py <link of scribd document>`
 
 (wait for the text to load fully in the terminal only then a text file will be created containing the document)
 
-◘ To download PDF's containing images; use the -p option:
+◘ To download PDF's containing images; use the -p option in the end:
 - example: `sudo python scribd.py http://scribd.com/doc/17142797/Case-in-Point -p`
 
 ## Disclaimer:
