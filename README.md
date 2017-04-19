@@ -38,7 +38,7 @@ Usage: `sudo python scribd.py <link of scribd document>`
 
 ## Disclaimer:
 
-Download softcopies of books maybe prohibited. Please support the authors by buying their titles.
+Downloading books from Scribd for free maybe prohibited. This tool is meant for research purposes only. Please support the authors by buying their titles.
 
 ## License:
 
