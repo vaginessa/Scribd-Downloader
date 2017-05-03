@@ -1,4 +1,4 @@
-#!/bin/python
+#!/usr/bin/env python
 
 from bs4 import BeautifulSoup
 import requests
@@ -21,13 +21,12 @@ if len(sys.argv) ==1:
 
 response = requests.request(method='GET', url=sys.argv[1])
 soup = BeautifulSoup(response.text, 'html.parser')
-extraction = ''
 train = 1
 
 title = soup.find('title').get_text().replace(' ', '_')
 print soup.find('title').get_text()
 
-if len(sys.argv) <=2:
+if len(sys.argv) <= 2:
 	if os.path.exists(title + '.txt'):
 		os.remove(title + '.txt')
 else:
@@ -43,7 +42,7 @@ for opening in js_text:
 			portion2 = inner_opening.find('.jsonp')
 			jsonp = inner_opening[portion1:portion2+6]
 			if not jsonp == '':
-				if len(sys.argv) <=2:
+				if len(sys.argv) <= 2:
 					#print jsonp
 					response = requests.request(method='GET', url=jsonp)
 					page_no = response.text[11:12]
@@ -54,7 +53,9 @@ for opening in js_text:
 					for x in soup_content.find_all('span', {'class':'a'}):
 						xtext = x.get_text().encode('utf-8')
 						print xtext
-						extraction = extraction + xtext + '\n'
+						extraction = xtext + '\n'
+						with open((title + '.txt'), 'a') as feed:
+							feed.write(extraction)
 				else:
 					replacement = jsonp.replace('/pages/', '/images/').replace('jsonp', 'jpg')
 					#print replacement
@@ -64,7 +65,3 @@ for opening in js_text:
 						shutil.copyfileobj(response.raw, out_file)
 					del response
 					train+=1
-
-if len(sys.argv) <=2:
-	with open(title + '.txt', 'w') as feed:
-		feed.write(extraction)
