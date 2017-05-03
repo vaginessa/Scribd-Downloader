@@ -36,7 +36,7 @@ Usage: `sudo python scribd.py <link of scribd document>`
 - To download PDF's containing images; use the -p option in the end:
 - example: `sudo python scribd.py http://scribd.com/doc/17142797/Case-in-Point -p`
 
-(Images will be saved in a new folder)
+(Images will be saved in a new folder created in your current working directory)
 
 ## Disclaimer:
 
