@@ -23,18 +23,18 @@ This script takes a different approach to both of them:
 git clone https://github.com/Ritiek/Scribd-Downloader
 cd Scribd-Downloader
 sudo pip install -r requirements.txt
-sudo python scribd.py
+python scribd.py
 ```
 
-Usage: `sudo python scribd.py <link of scribd document>`
+Usage: `python scribd.py <link of scribd document>`
 
 - To download text from PDF's containing selectable text:
-- example: `sudo python scribd.py https://www.scribd.com/document/55949937/33-Strategies-of-War`
+- example: `python scribd.py https://www.scribd.com/document/55949937/33-Strategies-of-War`
 
 (Text will be saved side by side in a `.txt` file in your current working directory)
 
 - To download PDF's containing images; use the -p option in the end:
-- example: `sudo python scribd.py http://scribd.com/doc/17142797/Case-in-Point -p`
+- example: `python scribd.py http://scribd.com/doc/17142797/Case-in-Point -p`
 
 (Images will be saved in a new folder created in your current working directory)
 
