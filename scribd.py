@@ -17,6 +17,12 @@ if len(sys.argv) == 1:
 	print('For PDFs containing Images; use the -p option:')
 	print('- example: sudo python scribd.py http://scribd.com/doc/17142797/Case-in-Point -p')
 	exit()
+	
+def fix_encoding(query):
+	if sys.version_info > (3,0):
+		return query
+	else:
+		return query.encode('utf-8')
 
 response = requests.request(method='GET', url=sys.argv[1])
 soup = BeautifulSoup(response.text, 'html.parser')
@@ -47,7 +53,7 @@ for opening in js_text:
 					response_head =  (response.text).replace('window.page' + page_no + '_callback(["', '').replace('\\n', '').replace('\\', '').replace('"]);', '')
 					soup_content = BeautifulSoup(response_head, 'html.parser')
 					for x in soup_content.find_all('span', {'class':'a'}):
-						xtext = x.get_text().encode('utf-8')
+						xtext = fix_encoding(x.get_text())
 						print(xtext)
 						extraction = xtext + '\n'
 						with open((title + '.txt'), 'a') as feed:
