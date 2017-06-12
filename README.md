@@ -1,7 +1,5 @@
 # Scribd-Downloader
 
-## Introduction:
-
 - This python script allows downloading of Scribd documents.
 
 - It does not matter if the pages are blurred or require authentication, this script will still do the job.
@@ -17,31 +15,31 @@ This script takes a different approach to both of them:
 
 - Actual PDF's where the text can be selected are hard to tackle. If you feed such a PDF in this script, only the text present in PDF will be downloaded. I do not know much about JS and since Scribd uses JS to combine text and images for each induvidual page I do not know how it works. Ideas welcome on combining images and text!
 
-## Installation & Usage:
+## Installation & Usage
 
 ```
 git clone https://github.com/Ritiek/Scribd-Downloader
 cd Scribd-Downloader
 sudo pip install -r requirements.txt
-python scribd.py
+python scribd.py --help
 ```
 
-Usage: `python scribd.py <link of scribd document>`
+Usage: `python scribd.py [-i] -d <link of scribd document>`
 
 - To download text from PDF's containing selectable text:
-- example: `python scribd.py https://www.scribd.com/document/55949937/33-Strategies-of-War`
+- example: `python scribd.py -d https://www.scribd.com/document/55949937/33-Strategies-of-War`
 
 (Text will be saved side by side in a `.txt` file in your current working directory)
 
-- To download PDF's containing images; use the -p option in the end:
-- example: `python scribd.py http://scribd.com/doc/17142797/Case-in-Point -p`
+- To download PDF's containing images; use the `--images` option:
+- example: `python scribd.py -i -d http://scribd.com/doc/17142797/Case-in-Point`
 
 (Images will be saved in a new folder created in your current working directory)
 
-## Disclaimer:
+## Disclaimer
 
 Downloading books from Scribd for free maybe prohibited. This tool is meant for research purposes only. Please support the authors by buying their titles.
 
-## License:
+## License
 
 `The MIT License`
