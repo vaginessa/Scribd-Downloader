@@ -23,8 +23,16 @@ cd Scribd-Downloader
 sudo pip install -r requirements.txt
 python scribd.py --help
 ```
+```
+usage: scribd.py [-h] -d DOC [-i]
 
-Usage: `python scribd.py [-i] -d <link of scribd document>`
+A Scribd-Downloader that actually works
+
+optional arguments:
+  -h, --help         show this help message and exit
+  -d DOC, --doc DOC  scribd document to download
+  -i, --images       download document made up of images
+```
 
 - To download text from PDF's containing selectable text:
 - example: `python scribd.py -d https://www.scribd.com/document/55949937/33-Strategies-of-War`
