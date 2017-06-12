@@ -114,5 +114,3 @@ if __name__ == '__main__':
     images = args.images
 
     get_scribd_document(url, images)
-
-    exit()
