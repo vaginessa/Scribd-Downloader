@@ -11,6 +11,7 @@ import argparse
 def get_arguments():
     parser = argparse.ArgumentParser(
         description='A Scribd-Downloader that actually works')
+
     parser.add_argument(
         '-d', '--doc', help='scribd document to download', required=True)
     parser.add_argument(
@@ -19,6 +20,7 @@ def get_arguments():
         help="download document made up of images",
         action='store_true',
         default=False)
+
     return parser.parse_args()
 
 
@@ -33,6 +35,7 @@ def fix_encoding(query):
 def save_image(jsonp, train, title):
     replacement = jsonp.replace('/pages/', '/images/').replace('jsonp', 'jpg')
     response = requests.get(replacement, stream=True)
+
     with open(title + '/pic' + str(train) + '.jpg', 'wb') as out_file:
         shutil.copyfileobj(response.raw, out_file)
 
@@ -66,6 +69,7 @@ def save_content(jsonp, images, train, title):
             save_image(jsonp, train, title)
         else:
             save_text(jsonp, title)
+
         return train + 1
 
 
