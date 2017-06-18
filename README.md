@@ -18,8 +18,8 @@ This script takes a different approach to both of them:
 ## Installation & Usage
 
 ```
-git clone https://github.com/Ritiek/Scribd-Downloader
-cd Scribd-Downloader
+git clone https://github.com/ritiek/scribd-downloader
+cd scribd-downloader
 sudo pip install -r requirements.txt
 python scribd.py --help
 ```
