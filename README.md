@@ -13,7 +13,7 @@ This script takes a different approach to both of them:
 
 - Documents consisting of a collection of images is straightforward and this script will simply download the induvidual images which can later be combined into a PDF using a suitable software. Simple.
 
-- Actual documents where the text can be selected are hard to tackle. If you feed such a PDF in this script, only the text present in PDF will be downloaded. I do not know much about JS and since Scribd uses JS to combine text and images for each induvidual page I do not know how it works. Ideas welcome on combining images and text!
+- Actual documents where the text can be selected are hard to tackle. If you feed such a document in this script, only the text present in document will be downloaded. I do not know much about JS and since Scribd uses JS to combine text and images for each induvidual page, I do not yet know how they do it. Ideas welcome on combining images and text!
 
 ## Installation & Usage
 
