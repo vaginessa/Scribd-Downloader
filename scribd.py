@@ -82,12 +82,29 @@ def clean_existing(title):
             os.remove(title + '.txt')
 
 
+
+def sanitize_title(title):
+    '''Remove forbidden characters from title that will prevent OS from creating directory. (For Windows at least.)
+
+    Also change ' ' to '_' to preserve previous behavior.'''
+    
+    forbidden_chars = " *\"/\<>:|"
+    replace_char = "_"
+
+    for ch in forbidden_chars:
+        title = title.replace(ch, replace_char)
+
+    return title
+
+
 # the main function
 def get_scribd_document(url, images):
     response = requests.get(url=url).text
     soup = BeautifulSoup(response, 'html.parser')
 
-    title = soup.find('title').get_text().replace(' ', '_')
+    title = soup.find('title').get_text()#.replace(' ', '_')
+    title = sanitize_title(title) # a bit more thorough
+
     print(soup.find('title').get_text() + '\n')
 
     clean_existing(title)
