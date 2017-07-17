@@ -73,7 +73,7 @@ def save_content(jsonp, images, train, title):
         return train + 1
 
 
-def clean_existing(title):
+def clean_existing(title, images):
     if images:
         if not os.path.exists(title):
             os.makedirs(title)
@@ -87,7 +87,7 @@ def sanitize_title(title):
     '''Remove forbidden characters from title that will prevent OS from creating directory. (For Windows at least.)
 
     Also change ' ' to '_' to preserve previous behavior.'''
-    
+
     forbidden_chars = " *\"/\<>:|"
     replace_char = "_"
 
@@ -107,7 +107,7 @@ def get_scribd_document(url, images):
 
     print(soup.find('title').get_text() + '\n')
 
-    clean_existing(title)
+    clean_existing(title, images)
 
     js_text = soup.find_all('script', type='text/javascript')
     train = 1
@@ -117,7 +117,7 @@ def get_scribd_document(url, images):
 
             if not portion1 == -1:
                 portion2 = inner_opening.find('.jsonp')
-                jsonp = inner_opening[portion1:portion2 + 6]
+                jsonp = inner_opening[portion1:portion2+6]
 
                 train = save_content(jsonp, images, train, title)
 
