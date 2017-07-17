@@ -8,9 +8,6 @@ images = True
 response = requests.get(url=URL).text
 soup = BeautifulSoup(response, 'html.parser')
 
-title = soup.find('title').get_text()
-title = scribd.sanitize_title(title)
-
 js_text = soup.find_all('script', type='text/javascript')
 inner_opening = js_text[22].get_text()
 

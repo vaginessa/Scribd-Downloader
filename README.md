@@ -1,5 +1,7 @@
 # Scribd-Downloader
 
+[![Build Status](https://travis-ci.org/ritiek/scribd-downloader.svg?branch=master)](https://travis-ci.org/ritiek/scribd-downloader)
+
 - This python script allows downloading of Scribd documents.
 
 - It does not matter if the pages are blurred or require authentication, this script will still do the job.
