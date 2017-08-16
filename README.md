@@ -22,7 +22,7 @@ This script takes a different approach to both of them:
 ```
 git clone https://github.com/ritiek/scribd-downloader
 cd scribd-downloader
-sudo pip install -r requirements.txt
+pip install -r requirements.txt
 python scribd.py --help
 ```
 ```
