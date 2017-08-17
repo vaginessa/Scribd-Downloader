@@ -2,9 +2,8 @@
 
 from bs4 import BeautifulSoup
 import requests
-import sys
 import shutil
-import os
+import sys
 import argparse
 
 
@@ -13,7 +12,10 @@ def get_arguments():
         description='A Scribd-Downloader that actually works')
 
     parser.add_argument(
-        '-d', '--doc', help='scribd document to download', required=True)
+        'doc',
+        metavar='DOC',
+        type=str,
+        help='scribd document to download')
     parser.add_argument(
         '-i',
         '--images',
@@ -32,11 +34,11 @@ def fix_encoding(query):
         return query.encode('utf-8')
 
 
-def save_image(jsonp, train, title):
+def save_image(jsonp, imagename):
     replacement = jsonp.replace('/pages/', '/images/').replace('jsonp', 'jpg')
     response = requests.get(replacement, stream=True)
 
-    with open(title + '/pic' + str(train) + '.jpg', 'wb') as out_file:
+    with open(imagename, 'wb') as out_file:
         shutil.copyfileobj(response.raw, out_file)
 
 
@@ -61,26 +63,16 @@ def save_text(jsonp, title):
 
 # detect image and text
 def save_content(jsonp, images, train, title):
-    if jsonp == '':
-        return train
-    else:
+    if not jsonp == '':
         if images:
-            print('Downloading page ' + str(train))
-            save_image(jsonp, train, title)
+            imagename = title + '_' + str(train) + '.jpg'
+            print('Downloading image to ' + imagename)
+            save_image(jsonp, imagename)
         else:
             save_text(jsonp, title)
+        train += 1
 
-        return train + 1
-
-
-def clean_existing(title, images):
-    if images:
-        if not os.path.exists(title):
-            os.makedirs(title)
-    else:
-        if os.path.exists(title + '.txt'):
-            os.remove(title + '.txt')
-
+    return train
 
 
 def sanitize_title(title):
@@ -105,13 +97,16 @@ def get_scribd_document(url, images):
     title = soup.find('title').get_text()#.replace(' ', '_')
     title = sanitize_title(title) # a bit more thorough
 
-    print(soup.find('title').get_text() + '\n')
+    if not images:
+        print('Extracting text to ' + title + '.txt\n')
 
-    clean_existing(title, images)
+    print(title + '\n')
 
     js_text = soup.find_all('script', type='text/javascript')
     train = 1
+
     for opening in js_text:
+
         for inner_opening in opening:
             portion1 = inner_opening.find('https://')
 
@@ -122,12 +117,13 @@ def get_scribd_document(url, images):
                 train = save_content(jsonp, images, train, title)
 
 
-if __name__ == '__main__':
-
-    os.chdir(sys.path[0])
-
+def command_line():
     args = get_arguments()
     url = args.doc
     images = args.images
-
     get_scribd_document(url, images)
+
+
+if __name__ == '__main__':
+
+    command_line()

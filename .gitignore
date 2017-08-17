@@ -1,3 +1,6 @@
 *.pyc
 __pycache__/
 .cache/
+scribd_downloader.egg-info/
+build/
+dist/
