@@ -42,7 +42,7 @@ def save_image(jsonp, imagename):
         shutil.copyfileobj(response.raw, out_file)
 
 
-def save_text(jsonp, title):
+def save_text(jsonp, filename):
     response = requests.get(url=jsonp).text
     page_no = response[11:12]
 
@@ -57,7 +57,7 @@ def save_text(jsonp, title):
         print(xtext)
 
         extraction = xtext + '\n'
-        with open((title + '.txt'), 'a') as feed:
+        with open(filename, 'a') as feed:
             feed.write(extraction)
 
 
@@ -69,7 +69,7 @@ def save_content(jsonp, images, train, title):
             print('Downloading image to ' + imagename)
             save_image(jsonp, imagename)
         else:
-            save_text(jsonp, title)
+            save_text(jsonp, (title + '.txt'))
         train += 1
 
     return train
