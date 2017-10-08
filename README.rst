@@ -46,7 +46,7 @@ Usage
 
     usage: scribdl [-h] [-i] DOC
 
-    A Scribd-Downloader that actually works
+    Download documents/text from scribd.com
 
     positional arguments:
       DOC           scribd document to download

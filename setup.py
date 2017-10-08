@@ -8,7 +8,7 @@ with open("README.rst", "r") as f:
 
 setup(name='scribd-downloader',
       version=scribdl.__version__,
-      description=' A scribd-downloader that actually works',
+      description='Download documents/text from scribd.com',
       long_description=long_description,
       author='Ritiek Malhotra',
       author_email='ritiekmalhotra123@gmail.com',

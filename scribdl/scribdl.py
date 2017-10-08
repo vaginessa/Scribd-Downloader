@@ -9,7 +9,7 @@ import argparse
 
 def get_arguments():
     parser = argparse.ArgumentParser(
-        description='A Scribd-Downloader that actually works')
+        description='Download documents/text from scribd.com')
 
     parser.add_argument(
         'doc',
