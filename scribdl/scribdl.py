@@ -34,7 +34,7 @@ def fix_encoding(query):
         return query.encode('utf-8')
 
 
-def save_image(content, imagename, found):
+def save_image(content, imagename, found=False):
     if content.endswith('.jsonp'):
         replacement = content.replace('/pages/', '/images/')
         if found:
@@ -69,7 +69,7 @@ def save_text(jsonp, filename):
 
 
 # detect image and text
-def save_content(content, images, train, title, found):
+def save_content(content, images, train, title, found=False):
     if not content == '':
         if images:
             imagename = title + '_' + str(train) + '.jpg'
@@ -96,18 +96,6 @@ def sanitize_title(title):
     return title
 
 
-def preimage_search(soup, train, title):
-    absimg = soup.find_all('img', {'class':'absimg'}, src=True)
-    found = False
-
-    for img in absimg:
-        train = save_content(img['src'], True, train, title, found)
-    if train > 1:
-        found = True
-
-    return train, found
-
-
 # the main function
 def get_scribd_document(url, images):
     response = requests.get(url).text
@@ -119,12 +107,14 @@ def get_scribd_document(url, images):
     print(title + '\n')
 
     if images:
-        # sometimes images embedded in html as well
-        train, found = preimage_search(soup, train, title)
+        # sometimes images embedded directly in html as well
+        absimg = soup.find_all('img', {'class':'absimg'}, src=True)
+        for img in absimg:
+            train = save_content(img['src'], True, train, title)
     else:
-        found = None
         print('Extracting text to ' + title + '.txt\n')
 
+    found = train > 1
     js_text = soup.find_all('script', type='text/javascript')
 
     for opening in js_text:

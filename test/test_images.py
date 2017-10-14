@@ -15,7 +15,7 @@ def test_jsonp():
     soup = BeautifulSoup(response, 'html.parser')
 
     js_text = soup.find_all('script', type='text/javascript')
-    inner_opening = js_text[22].get_text()
+    inner_opening = js_text[24].get_text()
 
     portion1 = inner_opening.find('https://')
     portion2 = inner_opening.find('.jsonp')
