@@ -34,16 +34,23 @@ def fix_encoding(query):
         return query.encode('utf-8')
 
 
-def save_image(jsonp, imagename):
-    replacement = jsonp.replace('/pages/', '/images/').replace('jsonp', 'jpg')
-    response = requests.get(replacement, stream=True)
+def save_image(content, imagename, found):
+    if content.endswith('.jsonp'):
+        replacement = content.replace('/pages/', '/images/')
+        if found:
+            replacement = replacement.replace('.jsonp', '/000.jpg')
+        else:
+            replacement = replacement.replace('.jsonp', '.jpg')
+    else:
+        replacement = content
 
+    response = requests.get(replacement, stream=True)
     with open(imagename, 'wb') as out_file:
         shutil.copyfileobj(response.raw, out_file)
 
 
 def save_text(jsonp, filename):
-    response = requests.get(url=jsonp).text
+    response = requests.get(jsonp).text
     page_no = response[11:12]
 
     response_head = (
@@ -62,24 +69,24 @@ def save_text(jsonp, filename):
 
 
 # detect image and text
-def save_content(jsonp, images, train, title):
-    if not jsonp == '':
+def save_content(content, images, train, title, found):
+    if not content == '':
         if images:
             imagename = title + '_' + str(train) + '.jpg'
             print('Downloading image to ' + imagename)
-            save_image(jsonp, imagename)
+            save_image(content, imagename, found)
         else:
-            save_text(jsonp, (title + '.txt'))
+            save_text(content, (title + '.txt'))
         train += 1
 
     return train
 
 
 def sanitize_title(title):
-    '''Remove forbidden characters from title that will prevent OS from creating directory. (For Windows at least.)
-
-    Also change ' ' to '_' to preserve previous behavior.'''
-
+    '''
+    Remove forbidden characters from title that will prevent OS from creating directory. (For Windows at least.)
+    Also change ' ' to '_' to preserve previous behavior.
+    '''
     forbidden_chars = " *\"/\<>:|"
     replace_char = "_"
 
@@ -89,21 +96,36 @@ def sanitize_title(title):
     return title
 
 
+def preimage_search(soup, train, title):
+    absimg = soup.find_all('img', {'class':'absimg'}, src=True)
+    found = False
+
+    for img in absimg:
+        train = save_content(img['src'], True, train, title, found)
+    if train > 1:
+        found = True
+
+    return train, found
+
+
 # the main function
 def get_scribd_document(url, images):
-    response = requests.get(url=url).text
+    response = requests.get(url).text
     soup = BeautifulSoup(response, 'html.parser')
 
-    title = soup.find('title').get_text()#.replace(' ', '_')
-    title = sanitize_title(title) # a bit more thorough
-
-    if not images:
-        print('Extracting text to ' + title + '.txt\n')
-
+    title = soup.find('title').get_text()
+    title = sanitize_title(title)
+    train = 1
     print(title + '\n')
 
+    if images:
+        # sometimes images embedded in html as well
+        train, found = preimage_search(soup, train, title)
+    else:
+        found = None
+        print('Extracting text to ' + title + '.txt\n')
+
     js_text = soup.find_all('script', type='text/javascript')
-    train = 1
 
     for opening in js_text:
 
@@ -114,7 +136,7 @@ def get_scribd_document(url, images):
                 portion2 = inner_opening.find('.jsonp')
                 jsonp = inner_opening[portion1:portion2+6]
 
-                train = save_content(jsonp, images, train, title)
+                train = save_content(jsonp, images, train, title, found)
 
 
 def command_line():
