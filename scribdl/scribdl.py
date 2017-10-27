@@ -1,10 +1,14 @@
 #!/usr/bin/env python
 
 from bs4 import BeautifulSoup
+import img2pdf
 import requests
 import shutil
 import sys
 import argparse
+
+
+IMAGES = []
 
 
 def get_arguments():
@@ -22,6 +26,12 @@ def get_arguments():
         help="download document made up of images",
         action='store_true',
         default=False)
+    parser.add_argument(
+        '-p',
+        '--pdf',
+        help='convert images to pdf (*Nix: imagemagick)',
+        action='store_true',
+        default=False)
 
     return parser.parse_args()
 
@@ -35,6 +45,8 @@ def fix_encoding(query):
 
 
 def save_image(content, imagename, found=False):
+    global IMAGES
+
     if content.endswith('.jsonp'):
         replacement = content.replace('/pages/', '/images/')
         if found:
@@ -47,6 +59,7 @@ def save_image(content, imagename, found=False):
     response = requests.get(replacement, stream=True)
     with open(imagename, 'wb') as out_file:
         shutil.copyfileobj(response.raw, out_file)
+        IMAGES.append(imagename)
 
 
 def save_text(jsonp, filename):
@@ -87,7 +100,7 @@ def sanitize_title(title):
     Remove forbidden characters from title that will prevent OS from creating directory. (For Windows at least.)
     Also change ' ' to '_' to preserve previous behavior.
     '''
-    forbidden_chars = " *\"/\<>:|"
+    forbidden_chars = " *\"/\<>:|(),"
     replace_char = "_"
 
     for ch in forbidden_chars:
@@ -96,8 +109,20 @@ def sanitize_title(title):
     return title
 
 
+def convert_to_pdf(title):
+    global IMAGES
+
+    if IMAGES:
+        try:
+            with open(title.strip('_') + '.pdf', 'wb') as f:
+                f.write(img2pdf.convert([open(img, 'rb') for img in IMAGES]))
+            print('PDF file generated.')
+        except Exception as e:
+            print('PDF conversion failed: ' + str(e))
+
+
 # the main function
-def get_scribd_document(url, images):
+def get_scribd_document(url, images, pdf):
     response = requests.get(url).text
     soup = BeautifulSoup(response, 'html.parser')
 
@@ -128,12 +153,16 @@ def get_scribd_document(url, images):
 
                 train = save_content(jsonp, images, train, title, found)
 
+    if pdf:
+        convert_to_pdf(title)
+
 
 def command_line():
     args = get_arguments()
     url = args.doc
     images = args.images
-    get_scribd_document(url, images)
+    pdf = args.pdf
+    get_scribd_document(url, images, pdf)
 
 
 if __name__ == '__main__':
