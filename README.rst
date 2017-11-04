@@ -68,6 +68,13 @@ working directory)
 
 (Images will be saved in your current working directory)
 
+Contributing
+------------
+
+- Feel free to report bugs, documents failing to download, features or anything else.
+
+- Even better, send a PR!
+
 Disclaimer
 ----------
 
