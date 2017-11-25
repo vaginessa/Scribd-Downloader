@@ -2,6 +2,7 @@
 
 from bs4 import BeautifulSoup
 import img2pdf
+import os
 import requests
 import shutil
 import sys
@@ -46,6 +47,9 @@ def fix_encoding(query):
 
 def save_image(content, imagename, found=False):
     global IMAGES
+    already_present = os.listdir('.')
+    if imagename in already_present:
+        return
 
     if content.endswith('.jsonp'):
         replacement = content.replace('/pages/', '/images/')
