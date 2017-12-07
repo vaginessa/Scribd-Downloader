@@ -3,6 +3,8 @@ Scribd-Downloader
 
 |Build Status|
 
+(A better online service I found https://dlscrib.com/, created by `Erik Fong`_).
+
 -  This python script allows downloading of Scribd documents.
 
 -  It does not matter if the pages are blurred or require
@@ -89,3 +91,5 @@ License
 
 .. |Build Status| image:: https://travis-ci.org/ritiek/scribd-downloader.svg?branch=master
    :target: https://travis-ci.org/ritiek/scribd-downloader
+   
+.. _Erik Fong: mailto:dlscrib@gmail.com
