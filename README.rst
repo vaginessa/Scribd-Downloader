@@ -39,6 +39,7 @@ or if you like to live on the bleeding edge:
 
 ::
 
+    pip install -r requirements.txt
     python setup.py install
 
 Usage
