@@ -26,6 +26,7 @@ setup(name='scribd-downloader',
       install_requires=[
             'requests',
             'BeautifulSoup4',
-            'img2pdf'
+            'img2pdf',
+            'md2pdf'
       ]
      )

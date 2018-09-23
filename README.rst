@@ -71,6 +71,12 @@ working directory)
 
 (Images will be saved in your current working directory)
 
+- It can also download books as PDFs but only the preview version will be downloaded (Scribd does not
+  expose the full contents of the book unlike documents).
+- To download the preview version of the book:
+- example:
+  ``scribdl https://www.scribd.com/read/189087235/Confessions-of-a-Casting-Director-Help-Actors-Land-Any-Role-with-Secrets-from-Inside-the-Audition-Room``
+
 Contributing
 ------------
 

@@ -1,6 +1,6 @@
 import requests
 from bs4 import BeautifulSoup
-import scribdl
+from scribdl import scribdl
 import os
 
 

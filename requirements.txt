@@ -1,3 +1,4 @@
 BeautifulSoup4
 requests
 img2pdf
+md2pdf
