@@ -96,8 +96,8 @@ License
 
 ``The MIT License``
 
-.. |PyPi Version| image:: https://img.shields.io/pypi/v/spotdl.svg
-   :target: https://pypi.org/project/spotdl
+.. |PyPi Version| image:: https://img.shields.io/pypi/v/scribd-downloader.svg
+   :target: https://pypi.org/project/scribd-downloader
 
 .. |Build Status| image:: https://travis-ci.org/ritiek/scribd-downloader.svg?branch=master
    :target: https://travis-ci.org/ritiek/scribd-downloader
