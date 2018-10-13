@@ -153,7 +153,7 @@ class ScribdDocument:
 
         return train
 
-    def _convert_to_pdf(title):
+    def _convert_to_pdf(self, title):
         if self.images_list:
             try:
                 with open(title.strip('_') + '.pdf', 'wb') as f:
