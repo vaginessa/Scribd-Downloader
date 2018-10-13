@@ -202,7 +202,7 @@ class ScribdBook:
 
                 chapter += 1
 
-            except json.decoder.JSONDecodeError:
+            except ValueError:
                 print('No more content being exposed by Scribd!')
                 pdf_out = '{}.pdf'.format(book_id)
                 print('Generating PDF file: {}'.format(pdf_out))
