@@ -37,7 +37,12 @@ def get_arguments():
 
 
 def is_book(url):
-    return '/book/' in url or '/read/' in url
+    response = requests.get(url).text
+    soup = BeautifulSoup(response, 'html.parser')
+
+    content_class = soup.find('body')['class']
+    _is_book = content_class[0] == "autogen_class_views_layouts_book_web"
+    return _is_book
 
 
 # fix encoding issues in python2
