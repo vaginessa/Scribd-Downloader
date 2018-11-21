@@ -106,7 +106,7 @@ class ScribdDocument:
                     train = self._save_content(jsonp, train, title, found)
 
         if self.pdf:
-            self._convert_to_pdf(title)
+            self._generate_pdf(title)
 
     def _save_image(self, content, imagename, found=False):
         already_present = os.listdir('.')
@@ -141,7 +141,7 @@ class ScribdDocument:
             xtext = fix_encoding(x.get_text())
             print(xtext)
 
-            extraction = xtext + '\n'
+            extraction = xtext + '\n\n'
             with open(filename, 'a') as feed:
                 feed.write(extraction)
 
@@ -158,19 +158,23 @@ class ScribdDocument:
 
         return train
 
-    def _convert_to_pdf(self, title):
-        if self.images_list:
-            try:
-                with open(title.strip('_') + '.pdf', 'wb') as f:
-                    f.write(img2pdf.convert([open(img, 'rb') for img in self.images_list]))
-                print('PDF file generated.')
-            except Exception as e:
-                print('PDF conversion failed: ' + str(e))
+    def _generate_pdf(self, title):
+        print('Generating PDF file..')
+        if not self.images:
+            with open(title + '.txt', 'rb') as f:
+                string_text = f.read()
+            md2pdf(title + '.pdf', md_content=string_text)
+
+        if self.images and self.images_list:
+            with open(title + '.pdf', 'wb') as f:
+                pdf_images = img2pdf.convert([open(img, 'rb') for img in self.images_list])
+                f.write(pdf_images)
 
 
 class ScribdBook:
-    def __init__(self, url):
+    def __init__(self, url, pdf):
         self.url = url
+        self.pdf = pdf
 
     def _extract_text(self, content):
         words = []
@@ -184,7 +188,7 @@ class ScribdBook:
         return words
 
     def get_book(self):
-        book_id = self._get_book_id()
+        book_id = str(self._get_book_id())
         token = self._get_token(book_id)
 
         chapter = 1
@@ -198,21 +202,30 @@ class ScribdBook:
                 json_response = json.loads(response.text)
                 for block in json_response['blocks']:
                     if block['type'] == 'text':
-                        string_text += ' '.join(self._extract_text(block)) + '\n\n'
-                        print(string_text)
+                        string_text = ' '.join(self._extract_text(block)) + '\n\n'
                     elif block['type'] == 'image':
                         image_url = self._format_image_url(book_id, chapter, block['src'], token)
                         imagename = block['src'].replace('images/', '')
-                        string_text += '![{}]({})\n\n'.format(imagename, image_url)
+                        string_text = '![{}]({})\n\n'.format(imagename, image_url)
+
+                    if block['type'] in ('text', 'image'):
+                        print(string_text)
+                        self._save_text(string_text, book_id + '.txt')
 
                 chapter += 1
 
             except ValueError:
                 print('No more content being exposed by Scribd!')
-                pdf_out = '{}.pdf'.format(book_id)
-                print('Generating PDF file: {}'.format(pdf_out))
-                md2pdf(pdf_out, md_content=string_text)
+                if self.pdf:
+                    self._generate_pdf(book_id + '.txt')
                 break
+
+    def _generate_pdf(self, filename):
+        pdf_out = os.path.splitext(filename)[0] + '.pdf'
+        print('Generating PDF: {}'.format(pdf_out))
+        with open(filename, 'rb') as f:
+            string_text = f.read()
+        md2pdf(pdf_out, md_content=string_text)
 
     def _format_content_url(self, book_id, chapter, token):
         unformatted_url = ('https://www.scribd.com/scepub/{}/chapters/{}/'
@@ -238,16 +251,20 @@ class ScribdBook:
         token = requests.post(token_url)
         return json.loads(token.text)['response']
 
+    def _save_text(self, string_text, filename):
+            with open(filename, 'a') as f:
+                f.write(string_text)
+
 
 def command_line():
     args = get_arguments()
     url = args.content
+    pdf = args.pdf
     if is_book(url):
-        book = ScribdBook(url)
+        book = ScribdBook(url, pdf)
         book.get_book()
     else:
         images = args.images
-        pdf = args.pdf
         document = ScribdDocument(url, images, pdf)
         document.get_document()
 
