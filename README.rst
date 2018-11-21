@@ -47,16 +47,17 @@ Usage
 
 ::
 
-    usage: scribdl [-h] [-i] DOC
+    usage: scribdl [-h] [-i] [-p] CONTENT
 
     Download documents/text from scribd.com
 
     positional arguments:
-      DOC           scribd document to download
+      CONTENT       scribd url to download
 
     optional arguments:
       -h, --help    show this help message and exit
-      -i, --images  download document made up of images
+      -i, --images  download url made up of images
+      -p, --pdf     convert images to pdf (*Nix: imagemagick)
 
 -  To download text from document containing selectable text:
 -  example:
@@ -71,11 +72,13 @@ working directory)
 
 (Images will be saved in your current working directory)
 
-- It can also download books as PDFs but only the preview version will be downloaded (Scribd does not
+- It can also download books but only the preview version will be downloaded (Scribd does not
   expose the full contents of the book unlike documents).
 - To download the preview version of the book:
 - example:
   ``scribdl https://www.scribd.com/read/189087235/Confessions-of-a-Casting-Director-Help-Actors-Land-Any-Role-with-Secrets-from-Inside-the-Audition-Room``
+
+You can also pass ``--pdf`` option to convert the generated output to a PDF.
 
 Contributing
 ------------
@@ -101,5 +104,5 @@ License
 
 .. |Build Status| image:: https://travis-ci.org/ritiek/scribd-downloader.svg?branch=master
    :target: https://travis-ci.org/ritiek/scribd-downloader
-   
+
 .. _Erik Fong: mailto:dlscrib@gmail.com
