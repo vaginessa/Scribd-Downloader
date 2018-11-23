@@ -3,14 +3,13 @@ Scribd-Downloader
 
 |PyPi Version| |Build Status|
 
-(A better online service I found https://dlscrib.com/, created by `Erik Fong`_).
+(I also found an online service https://dlscrib.com/ created by `Erik Fong`_. It doesn't
+use this script as some people seem to think!).
 
--  This python script allows downloading of Scribd documents.
+This python script allows downloading of Scribd documents. It does not matter if the pages
+are blurred or require authentication, this script will still do its job.
 
--  It does not matter if the pages are blurred or require
-   authentication, this script will still do the job.
-
--  There are two types of documents on Scribd:
+There are two types of documents on Scribd:
 
 -  Documents made up using a collection of images and
 -  Actual documents where the text can be selected, copied etc.
@@ -19,73 +18,67 @@ This script takes a different approach to both of them:
 
 -  Documents consisting of a collection of images is straightforward and
    this script will simply download the induvidual images which can
-   later be combined into a PDF using a suitable software. Simple.
+   be combined to ``.pdf`` by passing ``--pdf`` option to the tool. Simple.
 
 -  Actual documents where the text can be selected are hard to tackle.
-   If you feed such a document in this script, only the text present in
-   document will be downloaded. I do not know much about JS and since
-   Scribd uses JS to combine text and images for each induvidual page, I
-   do not yet know how they do it. Ideas welcome on combining images and
-   text!
+   If we feed such a document to this tool, only the text present in
+   document will be downloaded. Scribd seems to use javascript to somehow
+   combine text and images. So far, I haven't been able to combine them
+   with Python in a way they look like the original document.
 
 Installation
 ------------
 
 ::
 
-    pip install scribd-downloader
+    $ pip install scribd-downloader
 
-or if you like to live on the bleeding edge:
+or install the development version with:
 
 ::
 
-    pip install -r requirements.txt
-    python setup.py install
+    $ python setup.py install
 
 Usage
 -----
 
 ::
 
-    usage: scribdl [-h] [-i] [-p] CONTENT
+    usage: scribdl [-h] [-i] [-p] URL
 
     Download documents/text from scribd.com
 
     positional arguments:
-      CONTENT       scribd url to download
+      URL           scribd url to download
 
     optional arguments:
       -h, --help    show this help message and exit
       -i, --images  download url made up of images
       -p, --pdf     convert images to pdf (*Nix: imagemagick)
 
--  To download text from document containing selectable text:
--  example:
-   ``scribdl https://www.scribd.com/document/55949937/33-Strategies-of-War``
+Examples
+--------
 
-(Text will be saved side by side in a ``.txt`` file in your current
+Downloading text from document containing selectable text:
+::
+   $ scribdl https://www.scribd.com/document/55949937/33-Strategies-of-War``
+
+(Text will be saved side by side in a ``.md`` file in the current
 working directory)
 
--  To download document containing images; use the ``--images`` option (the tool cannot figure out this on its own):
--  example:
-   ``scribdl -i http://scribd.com/doc/17142797/Case-in-Point``
+Download document containing images; use the ``--images`` option (the tool cannot figure out this on its own):
+::
+    $ scribdl -i http://scribd.com/doc/17142797/Case-in-Point``
 
-(Images will be saved in your current working directory)
+(Images will be saved in the current working directory)
 
-- It can also download books but only the preview version will be downloaded (Scribd does not
-  expose the full contents of the book unlike documents).
-- To download the preview version of the book:
-- example:
-  ``scribdl https://www.scribd.com/read/189087235/Confessions-of-a-Casting-Director-Help-Actors-Land-Any-Role-with-Secrets-from-Inside-the-Audition-Room``
+It can also download books but only the preview version will be downloaded (Scribd does not
+expose the full contents of the book unlike documents). This will generate an `.md` file in the
+current working directory:
+::
+    $ scribdl https://www.scribd.com/read/189087235/Confessions-of-a-Casting-Director-Help-Actors-Land-Any-Role-with-Secrets-from-Inside-the-Audition-Room``
 
-You can also pass ``--pdf`` option to convert the generated output to a PDF.
-
-Contributing
-------------
-
-- Feel free to report bugs, documents failing to download, features or anything else.
-
-- Even better, send a PR!
+Pass ``--pdf`` option to convert the generated output to a PDF.
 
 Disclaimer
 ----------
