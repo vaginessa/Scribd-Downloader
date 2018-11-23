@@ -15,7 +15,7 @@ setup(name='scribd-downloader',
       packages = find_packages(),
       entry_points={
             'console_scripts': [
-                  'scribdl = scribdl.scribdl:command_line',
+                  'scribdl = scribdl.command_line:_command_line',
             ]
       },
       url='https://www.github.com/ritiek/scribd-downloader',
