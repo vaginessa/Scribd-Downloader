@@ -33,7 +33,7 @@ class ConvertToPDF:
         """
         Converts markdown to PDF.
         """
-        with open(self.input_content, 'rb') as f:
+        with open(self.input_content, "rb") as f:
             string_text = f.read()
         md2pdf(self.pdf_path, md_content=string_text)
 
@@ -41,7 +41,7 @@ class ConvertToPDF:
         """
         Converts images to PDF.
         """
-        with open(self.pdf_path, 'wb') as f:
-            open_images = [open(img, 'rb') for img in self.input_content]
+        with open(self.pdf_path, "wb") as f:
+            open_images = [open(img, "rb") for img in self.input_content]
             pdf_images = img2pdf.convert(open_images)
             f.write(pdf_images)

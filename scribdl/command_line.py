@@ -7,25 +7,24 @@ def get_arguments():
     Parses arguments off the command-line.
     """
     parser = argparse.ArgumentParser(
-        description='Download documents/text from scribd.com')
+        description="Download documents/text from scribd.com"
+    )
 
+    parser.add_argument("url", metavar="URL", type=str, help="scribd url to download")
     parser.add_argument(
-        'url',
-        metavar='URL',
-        type=str,
-        help='scribd url to download')
-    parser.add_argument(
-        '-i',
-        '--images',
+        "-i",
+        "--images",
         help="download url made up of images",
-        action='store_true',
-        default=False)
+        action="store_true",
+        default=False,
+    )
     parser.add_argument(
-        '-p',
-        '--pdf',
-        help='convert images to pdf (*Nix: imagemagick)',
-        action='store_true',
-        default=False)
+        "-p",
+        "--pdf",
+        help="convert images to pdf (*Nix: imagemagick)",
+        action="store_true",
+        default=False,
+    )
 
     return parser.parse_args()
 
@@ -45,5 +44,5 @@ def _command_line():
         downloaded_content.to_pdf()
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     _command_line()

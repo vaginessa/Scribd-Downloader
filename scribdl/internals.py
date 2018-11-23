@@ -8,7 +8,7 @@ def fix_encoding(query):
     if sys.version_info > (3, 0):
         return query
     else:
-        return query.encode('utf-8')
+        return query.encode("utf-8")
 
 
 def sanitize_title(title):
@@ -18,12 +18,10 @@ def sanitize_title(title):
 
     Also change ' ' to '_' to preserve previous behavior.
     """
-    forbidden_chars = " *\"/\<>:|(),"
+    forbidden_chars = ' *"/\<>:|(),'
     replace_char = "_"
 
     for ch in forbidden_chars:
         title = title.replace(ch, replace_char)
 
     return title
-
-

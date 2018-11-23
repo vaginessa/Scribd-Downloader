@@ -22,11 +22,11 @@ class ScribdBook(ScribdBase):
         Extracts text given a block of raw html.
         """
         words = []
-        for word in content['words']:
-            if word.get('break_map', None):
-                words.append(word['break_map']['text'])
-            elif word.get('text', None):
-                words.append(word['text'])
+        for word in content["words"]:
+            if word.get("break_map", None):
+                words.append(word["break_map"]["text"])
+            elif word.get("text", None):
+                words.append(word["text"])
             else:
                 words += self._extract_text(word)
         return words
@@ -38,7 +38,7 @@ class ScribdBook(ScribdBase):
         book_id = str(self.get_id())
         token = self._get_token(book_id)
 
-        filename = book_id + '.md'
+        filename = book_id + ".md"
         chapter = 1
 
         while True:
@@ -47,15 +47,13 @@ class ScribdBook(ScribdBase):
 
             try:
                 json_response = json.loads(response.text)
-                self._extract_text_blocks(json_response,
-                                          book_id,
-                                          chapter,
-                                          token,
-                                          filename)
+                self._extract_text_blocks(
+                    json_response, book_id, chapter, token, filename
+                )
                 chapter += 1
 
             except ValueError:
-                print('No more content being exposed by Scribd!')
+                print("No more content being exposed by Scribd!")
                 break
 
         return filename
@@ -65,15 +63,17 @@ class ScribdBook(ScribdBase):
         Extracts small blocks of raw book text and image
         URLs and writes them to a file.
         """
-        for block in response_dict['blocks']:
-            if block['type'] == 'text':
-                string_text = ' '.join(self._extract_text(block)) + '\n\n'
-            elif block['type'] == 'image':
-                image_url = self._format_image_url(book_id, chapter, block['src'], token)
-                imagename = block['src'].replace('images/', '')
-                string_text = '![{}]({})\n\n'.format(imagename, image_url)
+        for block in response_dict["blocks"]:
+            if block["type"] == "text":
+                string_text = " ".join(self._extract_text(block)) + "\n\n"
+            elif block["type"] == "image":
+                image_url = self._format_image_url(
+                    book_id, chapter, block["src"], token
+                )
+                imagename = block["src"].replace("images/", "")
+                string_text = "![{}]({})\n\n".format(imagename, image_url)
 
-            if block['type'] in ('text', 'image'):
+            if block["type"] in ("text", "image"):
                 print(string_text)
                 self.save_text(string_text, filename)
 
@@ -82,23 +82,23 @@ class ScribdBook(ScribdBase):
         Generates a string which points to a URL containing
         the raw book text.
         """
-        unformatted_url = ('https://www.scribd.com/scepub/{}/chapters/{}/'
-                          'contents.json?token={}')
+        unformatted_url = (
+            "https://www.scribd.com/scepub/{}/chapters/{}/" "contents.json?token={}"
+        )
         return unformatted_url.format(book_id, chapter, token)
 
     def _format_image_url(self, book_id, chapter, image, token):
         """
         Generates a string which points to an image URL.
         """
-        unformatted_url = ('https://www.scribd.com/scepub/{}/chapters/{}/'
-                          '{}?token={}')
+        unformatted_url = "https://www.scribd.com/scepub/{}/chapters/{}/" "{}?token={}"
         return unformatted_url.format(book_id, chapter, image, token)
 
     def get_id(self):
         """
         Extracts the book ID.
         """
-        splits = self.url.split('/')
+        splits = self.url.split("/")
         for split in splits:
             try:
                 book_id = int(split)
@@ -111,13 +111,13 @@ class ScribdBook(ScribdBase):
         Fetches a uniquely generated token for the current
         session.
         """
-        token_url = 'https://www.scribd.com/read2/{}/access_token'.format(book_id)
+        token_url = "https://www.scribd.com/read2/{}/access_token".format(book_id)
         token = requests.post(token_url)
-        return json.loads(token.text)['response']
+        return json.loads(token.text)["response"]
 
     def save_text(self, string_text, filename):
         """
         Writes text to the passed file.
         """
-        with open(filename, 'a') as f:
+        with open(filename, "a") as f:
             f.write(string_text)

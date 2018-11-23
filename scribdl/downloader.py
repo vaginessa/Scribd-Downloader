@@ -31,9 +31,11 @@ class Downloader:
             content = self._download_book()
         else:
             if is_image_document is None:
-                raise TypeError("The input URL points to a document. You must specify "
-                                "whether it is an image document or a textual document "
-                                "in the `image_document` parameter.")
+                raise TypeError(
+                    "The input URL points to a document. You must specify "
+                    "whether it is an image document or a textual document "
+                    "in the `image_document` parameter."
+                )
             content = self._download_document(is_image_document)
 
         return content
@@ -45,7 +47,7 @@ class Downloader:
         """
         book = ScribdBook(self.url)
         md_path = book.get_content()
-        pdf_path = '{}.pdf'.format(book.get_id())
+        pdf_path = "{}.pdf".format(book.get_id())
         return ConvertToPDF(md_path, pdf_path)
 
     def _download_document(self, image_document):
@@ -59,7 +61,7 @@ class Downloader:
             document = ScribdTextualDocument(self.url)
 
         content_path = document.get_content()
-        pdf_path = '{}.pdf'.format(document.get_title())
+        pdf_path = "{}.pdf".format(document.get_title())
         return ConvertToPDF(content_path, pdf_path)
 
     def is_book(self):
@@ -68,7 +70,7 @@ class Downloader:
         or a Scribd document
         """
         response = requests.get(self.url)
-        soup = BeautifulSoup(response.text, 'html.parser')
-        content_class = soup.find('body')['class']
+        soup = BeautifulSoup(response.text, "html.parser")
+        content_class = soup.find("body")["class"]
         matches_with_book = content_class[0] == "autogen_class_views_layouts_book_web"
         return matches_with_book
