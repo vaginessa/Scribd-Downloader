@@ -49,7 +49,7 @@ Usage
 
     usage: scribdl [-h] [-i] [-p] URL
 
-    Download documents/text from scribd.com
+    Download documents and books from scribd.com
 
     positional arguments:
       URL           scribd url to download
@@ -57,7 +57,7 @@ Usage
     optional arguments:
       -h, --help    show this help message and exit
       -i, --images  download url made up of images
-      -p, --pdf     convert images to pdf (*Nix: imagemagick)
+      -p, --pdf     convert to pdf (*Nix: imagemagick)
 
 Examples
 --------
@@ -76,7 +76,7 @@ Download document containing images; use the ``--images`` option (the tool canno
 (Images will be saved in the current working directory)
 
 It can also download books but only the preview version will be downloaded (Scribd does not
-expose the full contents of the book unlike documents). This will generate an `.md` file in the
+expose the full contents of the book unlike documents). This will generate an ``.md`` file in the
 current working directory:
 ::
     $ scribdl https://www.scribd.com/read/189087235/Confessions-of-a-Casting-Director-Help-Actors-Land-Any-Role-with-Secrets-from-Inside-the-Audition-Room

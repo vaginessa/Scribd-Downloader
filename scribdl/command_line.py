@@ -7,7 +7,7 @@ def get_arguments():
     Parses arguments off the command-line.
     """
     parser = argparse.ArgumentParser(
-        description="Download documents/text from scribd.com"
+        description="Download documents and books from scribd.com"
     )
 
     parser.add_argument("url", metavar="URL", type=str, help="scribd url to download")
@@ -21,7 +21,7 @@ def get_arguments():
     parser.add_argument(
         "-p",
         "--pdf",
-        help="convert images to pdf (*Nix: imagemagick)",
+        help="convert to pdf (*Nix: imagemagick)",
         action="store_true",
         default=False,
     )
