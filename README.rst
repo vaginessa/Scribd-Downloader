@@ -64,14 +64,14 @@ Examples
 
 Downloading text from document containing selectable text:
 ::
-   $ scribdl https://www.scribd.com/document/55949937/33-Strategies-of-War``
+   $ scribdl https://www.scribd.com/document/55949937/33-Strategies-of-War
 
 (Text will be saved side by side in a ``.md`` file in the current
 working directory)
 
 Download document containing images; use the ``--images`` option (the tool cannot figure out this on its own):
 ::
-    $ scribdl -i http://scribd.com/doc/17142797/Case-in-Point``
+    $ scribdl -i http://scribd.com/doc/17142797/Case-in-Point
 
 (Images will be saved in the current working directory)
 
@@ -79,7 +79,7 @@ It can also download books but only the preview version will be downloaded (Scri
 expose the full contents of the book unlike documents). This will generate an `.md` file in the
 current working directory:
 ::
-    $ scribdl https://www.scribd.com/read/189087235/Confessions-of-a-Casting-Director-Help-Actors-Land-Any-Role-with-Secrets-from-Inside-the-Audition-Room``
+    $ scribdl https://www.scribd.com/read/189087235/Confessions-of-a-Casting-Director-Help-Actors-Land-Any-Role-with-Secrets-from-Inside-the-Audition-Room
 
 Pass ``--pdf`` option to convert the generated output to a PDF.
 
