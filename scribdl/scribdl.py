@@ -58,80 +58,100 @@ def sanitize_title(title):
     return title
 
 
-# class ScribdImageDocument(ScribdDocument):
-# class ScribdTextualDocument(ScribdDocument):
-
 class ScribdDocument:
     def __init__(self, url, image_document):
         self.url = url
         self.image_document = image_document
         self.images_list = []
+        response = requests.get(url)
+        self.soup = BeautifulSoup(response.text, 'html.parser')
 
     def get_document(self):
-        response = requests.get(self.url).text
-        soup = BeautifulSoup(response, 'html.parser')
-
-        title = soup.find('title').get_text()
-        title = sanitize_title(title)
-        train = 1
-        print(title + '\n')
+        title = self.get_title()
+        js_text = self.soup.find_all('script', type='text/javascript')
+        jsonp_urls = self._extract_all_jsonp_urls(js_text)
 
         if self.image_document:
             # sometimes images embedded directly in html as well
-            absimg = soup.find_all('img', {'class':'absimg'}, src=True)
-            for img in absimg:
-                #train = self._save_content(img['src'], True, train, title)
-                filename = '{}_{}.jpg'.format(title, train)
-                self._save_image(img['src'], filename, found=False)
-                train += 1
+            return self.image_extractor(jsonp_urls, title)
         else:
             print('Extracting text to ' + title + '.md\n')
+            filename = title + '.md'
+            self.text_extractor(jsonp_urls, filename)
+            return filename
 
-        found = train > 1
-        js_text = soup.find_all('script', type='text/javascript')
+    def get_title(self):
+        title = self.soup.find('title').get_text()
+        return sanitize_title(title)
 
-        for opening in js_text:
+    def _html_image_extractor(self, initial_filename):
+        downloaded_images = []
+        absimg = self.soup.find_all('img', {'class':'absimg'}, src=True)
+        for img in absimg:
+            filename = '{}_{}.jpg'.format(initial_filename,
+                                          len(downloaded_images) + 1)
+            self.save_image(img['src'], filename, found=False)
+            downloaded_images.append(filename)
+        return downloaded_images
 
-            for inner_opening in opening:
-                portion1 = inner_opening.find('https://')
+    def image_extractor(self, jsonp_urls, initial_filename):
+        downloaded_images = self._html_image_extractor(initial_filename)
+        found = len(downloaded_images) > 0
+        for jsonp_url in jsonp_urls[:2]:
+            filename = '{}_{}.jpg'.format(initial_filename,
+                                          len(downloaded_images) + 1)
+            self.save_image(jsonp_url, filename, found)
+            downloaded_images.append(filename)
+        return downloaded_images
 
-                if not portion1 == -1:
-                    portion2 = inner_opening.find('.jsonp')
-                    jsonp = inner_opening[portion1:portion2+6]
+    def text_extractor(self, jsonp_urls, filename):
+        for jsonp_url in jsonp_urls:
+            self._save_text(jsonp_url, filename)
 
-                    #train = self._save_content(jsonp, train, title, found)
-                    if jsonp:
-                        if self.image_document:
-                            filename = '{}_{}.jpg'.format(title, train)
-                            self._save_image(jsonp, filename, found)
-                            train += 1
-                        else:
-                            filename = title + '.md'
-                            self._save_text(jsonp, filename)
-
-
-    def _save_image(self, content, imagename, found=False):
-        print("Downloading " + imagename)
-        already_present = os.listdir('.')
-        if imagename in already_present:
-            return
-
-        if content.endswith('.jsonp'):
-            replacement = content.replace('/pages/', '/images/')
+    def convert_to_image_url(self, url, found):
+        if url.endswith('.jsonp'):
+            replacement = url.replace('/pages/', '/images/')
             if found:
                 replacement = replacement.replace('.jsonp', '/000.jpg')
             else:
                 replacement = replacement.replace('.jsonp', '.jpg')
         else:
-            replacement = content
+            replacement = url
 
-        response = requests.get(replacement, stream=True)
+        return replacement
+
+    def _extract_all_jsonp_urls(self, js_text):
+        jsonp_urls = []
+        for opening in js_text:
+            for inner_opening in opening:
+                jsonp = self._extract_jsonp_url(inner_opening)
+                if jsonp:
+                    jsonp_urls.append(jsonp)
+        return jsonp_urls
+
+    def _extract_jsonp_url(self, inner_opening):
+        portion1 = inner_opening.find('https://')
+
+        if portion1 == -1:
+            jsonp = None
+        else:
+            portion2 = inner_opening.find('.jsonp')
+            jsonp = inner_opening[portion1:portion2+6]
+
+        return jsonp
+
+    def save_image(self, jsonp_url, imagename, found=False):
+        print("Downloading " + imagename)
+        already_present = os.listdir('.')
+        if imagename in already_present:
+            return
+
+        url = self.convert_to_image_url(jsonp_url, found)
+        response = requests.get(url, stream=True)
         with open(imagename, 'wb') as out_file:
             shutil.copyfileobj(response.raw, out_file)
-            self.images_list.append(imagename)
 
     def _save_text(self, jsonp, filename):
-        print("Appending text to " + filename)
         response = requests.get(jsonp).text
         page_no = response[11:12]
 
@@ -148,19 +168,6 @@ class ScribdDocument:
             extraction = xtext + '\n\n'
             with open(filename, 'a') as feed:
                 feed.write(extraction)
-
-    # detect image and text
-    def _save_content(self, content, train, title, found=False):
-        if not content == '':
-            if self.image_document:
-                imagename = title + '_' + str(train) + '.jpg'
-                print('Downloading image to ' + imagename)
-                self._save_image(content, imagename, found)
-            else:
-                self._save_text(content, (title + '.txt'))
-            train += 1
-
-        return train
 
 
 class ScribdBook:
@@ -179,7 +186,7 @@ class ScribdBook:
         return words
 
     def get_book(self):
-        book_id = str(self._get_book_id())
+        book_id = str(self.get_id())
         token = self._get_token(book_id)
 
         filename = book_id + '.md'
@@ -191,18 +198,11 @@ class ScribdBook:
 
             try:
                 json_response = json.loads(response.text)
-                for block in json_response['blocks']:
-                    if block['type'] == 'text':
-                        string_text = ' '.join(self._extract_text(block)) + '\n\n'
-                    elif block['type'] == 'image':
-                        image_url = self._format_image_url(book_id, chapter, block['src'], token)
-                        imagename = block['src'].replace('images/', '')
-                        string_text = '![{}]({})\n\n'.format(imagename, image_url)
-
-                    if block['type'] in ('text', 'image'):
-                        print(string_text)
-                        self._save_text(string_text, filename)
-
+                self._extract_text_blocks(json_response,
+                                          book_id,
+                                          chapter,
+                                          token,
+                                          filename)
                 chapter += 1
 
             except ValueError:
@@ -210,6 +210,19 @@ class ScribdBook:
                 break
 
         return filename
+
+    def _extract_text_blocks(self, response_dict, book_id, chapter, token, filename):
+        for block in response_dict['blocks']:
+            if block['type'] == 'text':
+                string_text = ' '.join(self._extract_text(block)) + '\n\n'
+            elif block['type'] == 'image':
+                image_url = self._format_image_url(book_id, chapter, block['src'], token)
+                imagename = block['src'].replace('images/', '')
+                string_text = '![{}]({})\n\n'.format(imagename, image_url)
+
+            if block['type'] in ('text', 'image'):
+                print(string_text)
+                self._save_text(string_text, filename)
 
     def _format_content_url(self, book_id, chapter, token):
         unformatted_url = ('https://www.scribd.com/scepub/{}/chapters/{}/'
@@ -221,7 +234,7 @@ class ScribdBook:
                           '{}?token={}')
         return unformatted_url.format(book_id, chapter, image, token)
 
-    def _get_book_id(self):
+    def get_id(self):
         splits = self.url.split('/')
         for split in splits:
             try:
@@ -243,9 +256,9 @@ class ScribdBook:
 class ConvertToPDF:
     def __init__(self, input_content, output_path):
         self.input_content = input_content
-        self.output_path = output_path
+        self.pdf_path = output_path
 
-    def convert_to_pdf(self):
+    def to_pdf(self):
         if isinstance(self.input_content, list):
             self._images_to_pdf()
         else:
@@ -254,10 +267,10 @@ class ConvertToPDF:
     def _markdown_to_pdf(self):
         with open(self.input_content, 'rb') as f:
             string_text = f.read()
-        md2pdf(self.output_path, md_content=string_text)
+        md2pdf(self.pdf_path, md_content=string_text)
 
     def _images_to_pdf(self):
-        with open(self.output_path, 'wb') as f:
+        with open(self.pdf_path, 'wb') as f:
             open_images = [open(img, 'rb') for img in self.input_content]
             pdf_images = img2pdf.convert(open_images)
             f.write(pdf_images)
@@ -270,21 +283,27 @@ class Downloader:
 
     def download(self, is_image_document=None):
         if self._is_book:
-            book_path = self._download_book()
+            content = self._download_book()
         else:
             if is_image_document is None:
                 raise TypeError("The input URL points to a document. You must specify "
                                 "whether it is an image document or a textual document "
                                 "in the `image_document` parameter.")
-            document_path = self._download_document(is_image_document)
+            content = self._download_document(is_image_document)
+
+        return content
 
     def _download_book(self):
         book = ScribdBook(self.url)
-        downloaded_book = book.get_book()
+        md_path = book.get_book()
+        pdf_path = '{}.pdf'.format(book.get_id())
+        return ConvertToPDF(md_path, pdf_path)
 
     def _download_document(self, image_document):
         document = ScribdDocument(self.url, image_document)
-        downloaded_document = document.get_document()
+        content_path = document.get_document()
+        pdf_path = '{}.pdf'.format(document.get_title())
+        return ConvertToPDF(content_path, pdf_path)
 
     def is_book(self):
         response = requests.get(self.url)
@@ -300,7 +319,10 @@ def _command_line():
     pdf = args.pdf
     images = args.images
     scribd_link = Downloader(url)
-    scribd_link.download(is_image_document=images)
+    downloaded_content = scribd_link.download(is_image_document=images)
+    if pdf:
+        print("\nConverting to {}..".format(downloaded_content.pdf_path))
+        downloaded_content.to_pdf()
 
 
 if __name__ == '__main__':
