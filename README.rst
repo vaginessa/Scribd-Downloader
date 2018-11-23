@@ -29,6 +29,9 @@ This script takes a different approach to both of them:
 Installation
 ------------
 
+Make sure you're using Python 3 (Python 2 is not supported by a few dependencies).
+Then run these commands:
+
 ::
 
     $ pip install scribd-downloader
