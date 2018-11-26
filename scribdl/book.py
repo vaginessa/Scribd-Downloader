@@ -42,21 +42,29 @@ class ScribdBook(ScribdBase):
         chapter = 1
 
         while True:
-            url = self._format_content_url(book_id, chapter, token)
-            response = requests.get(url)
+            response = self.fetch_response(book_id, chapter, token)
 
-            try:
-                json_response = json.loads(response.text)
-                self._extract_text_blocks(
-                    json_response, book_id, chapter, token, filename
-                )
-                chapter += 1
+            if response.status_code == 403:
+                token = self._get_token(book_id)
+                response = self.fetch_response(book_id, chapter, token)
 
-            except ValueError:
-                print("No more content being exposed by Scribd!")
-                break
+                if response.status_code == 403:
+                    print("No more content being exposed by Scribd!")
+                    break
+
+            json_response = json.loads(response.text)
+            self._extract_text_blocks(
+                json_response, book_id, chapter, token, filename
+            )
+
+            chapter += 1
 
         return filename
+
+    def fetch_response(self, book_id, chapter, token):
+        url = self._format_content_url(book_id, chapter, token)
+        response = requests.get(url)
+        return response
 
     def _extract_text_blocks(self, response_dict, book_id, chapter, token, filename):
         """
