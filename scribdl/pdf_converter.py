@@ -1,5 +1,6 @@
 from md2pdf.core import md2pdf
 import img2pdf
+import os
 
 
 class ConvertToPDF:
@@ -33,9 +34,9 @@ class ConvertToPDF:
         """
         Converts markdown to PDF.
         """
-        with open(self.input_content, "rb") as f:
-            string_text = f.read()
-        md2pdf(self.pdf_path, md_content=string_text)
+        md2pdf(self.pdf_path,
+               md_file_path=self.input_content,
+               base_url=os.getcwd())
 
     def _images_to_pdf(self):
         """
