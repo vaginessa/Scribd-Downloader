@@ -60,7 +60,7 @@ class ScribdBook(ScribdBase):
 
             try:
                 json_response = json.loads(response.text)
-            except json.decoder.JSONDecodeError:
+            except ValueError:
                 print("Completed downloading book!")
                 break
 
