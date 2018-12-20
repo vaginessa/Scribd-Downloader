@@ -75,8 +75,8 @@ Download document containing images; use the ``--images`` option (the tool canno
 
 (Images will be saved in the current working directory)
 
-<s>It can also download books but only the preview version will be downloaded (Scribd does not
-expose the full contents of the book unlike documents).</s>
+~~It can also download books but only the preview version will be downloaded (Scribd does not
+expose the full contents of the book unlike documents).~~
 
 It can now also download complete books by mimicking itself as a premium user!
 This will generate an ``.md`` file in the current working directory:
