@@ -9,13 +9,15 @@ def cwd_to_tmpdir(tmpdir):
     os.chdir(str(tmpdir))
 
 
-def test_book_download(cwd_to_tmpdir):
-    book_url = "https://www.scribd.com/read/356399358/The-Boat-Runner-A-Novel"
+def test_book_download(cwd_to_tmpdir, monkeypatch):
+    book_url = "https://www.scribd.com/read/262694921/Acting-The-First-Six-Lessons"
     book_downloader = Downloader(book_url)
+    # We don't want to clutter stdout with book contents if this test fails
+    monkeypatch.setattr("builtins.print", lambda x: None)
     md_book = book_downloader.download()
-    assert os.path.getsize(md_book.input_content) in range(60000, 70000)
+    assert os.path.getsize(md_book.input_content) in range(120000, 160000)
     md_book.to_pdf()
-    assert os.path.getsize(md_book.pdf_path) in range(180000, 200000)
+    assert os.path.getsize(md_book.pdf_path) in range(350000, 400000)
 
 
 def test_text_document_download(cwd_to_tmpdir):
