@@ -31,9 +31,7 @@ class ScribdBook(ScribdBase):
             elif word.get("text", None):
                 words.append(word["text"])
             elif word.get("type", None) == "image":
-                image_url = self._format_image_url(
-                    chapter, word["src"], token
-                )
+                image_url = self._format_image_url(chapter, word["src"], token)
                 string_text = self._process_image_text(word, image_url)
                 words.append(string_text)
             else:
@@ -66,9 +64,7 @@ class ScribdBook(ScribdBase):
                 print("Completed downloading book!")
                 break
 
-            self._extract_text_blocks(
-                json_response, chapter, token, filename
-            )
+            self._extract_text_blocks(json_response, chapter, token, filename)
 
             chapter += 1
 
@@ -86,11 +82,11 @@ class ScribdBook(ScribdBase):
         """
         for block in response_dict["blocks"]:
             if block["type"] == "text":
-                string_text = " ".join(self._extract_text(block, chapter, token)) + "\n\n"
-            elif block["type"] == "image":
-                image_url = self._format_image_url(
-                    chapter, block["src"], token
+                string_text = (
+                    " ".join(self._extract_text(block, chapter, token)) + "\n\n"
                 )
+            elif block["type"] == "image":
+                image_url = self._format_image_url(chapter, block["src"], token)
                 string_text = self._process_image_text(block, image_url)
 
             if block["type"] in ("text", "image"):
@@ -101,9 +97,7 @@ class ScribdBook(ScribdBase):
         image_name = block["src"].replace("images/", "")
         image_path = os.path.join(self.book_id, image_name)
         self._download_image(image_url, image_path)
-        string_text = "![{}]({})\n\n".format(
-                                image_name,
-                                image_path)
+        string_text = "![{}]({})\n\n".format(image_name, image_path)
         return string_text
 
     def _download_image(self, url, path):
@@ -116,7 +110,7 @@ class ScribdBook(ScribdBase):
             shutil.copyfileobj(response.raw, out_file)
 
     def _extract_image_path_from_url(self, url):
-        image_name = url.split('/')[-1].split('?token=')[0]
+        image_name = url.split("/")[-1].split("?token=")[0]
         return os.path.join(self.book_id, image_name)
 
     def _format_content_url(self, chapter, token):
@@ -154,13 +148,13 @@ class ScribdBook(ScribdBase):
         session.
         """
         headers = {
-            'X-CSRF-Token': 'jfHAQ/LjqJAexQtAkCgWi0hif/sWHi5pXVAHCNsC3GkZocGcHcfETUhZ/Wd+YyY0tEH/zV/hRCOZhyq7ZewiMQ==',
+            "X-CSRF-Token": "jfHAQ/LjqJAexQtAkCgWi0hif/sWHi5pXVAHCNsC3GkZocGcHcfETUhZ/Wd+YyY0tEH/zV/hRCOZhyq7ZewiMQ=="
         }
         cookies = {
-            '_scribd_session': 'eyJzZXNzaW9uX2lkIjoiNTg3N2VjOTAwMGNmOTM5M2IwMGEwY2ExZmI2YTRiOTQiLCJfY3NyZl90b2tlbiI6ImxGQUIzKzhrYk4xV25QWW43a3N3di93amdEWkovMnBLeE5jdHM3N3UvbGc9IiwiciI6IjE1NDM2Mjk1ODAiLCJ3b3JkX2lkIjoyNjMzNjM2MzIsInAiOjE1NDI5MzQ4NDMsImxhc3RfcmVhdXRoIjoxNTQzNjI5NTgwfQ%3D%3D--4f34750fb7295b3b6f26754547c2e1e568da3e86',
-            '_scribd_expire': '1543629580',
+            "_scribd_session": "eyJzZXNzaW9uX2lkIjoiNTg3N2VjOTAwMGNmOTM5M2IwMGEwY2ExZmI2YTRiOTQiLCJfY3NyZl90b2tlbiI6ImxGQUIzKzhrYk4xV25QWW43a3N3di93amdEWkovMnBLeE5jdHM3N3UvbGc9IiwiciI6IjE1NDM2Mjk1ODAiLCJ3b3JkX2lkIjoyNjMzNjM2MzIsInAiOjE1NDI5MzQ4NDMsImxhc3RfcmVhdXRoIjoxNTQzNjI5NTgwfQ%3D%3D--4f34750fb7295b3b6f26754547c2e1e568da3e86",
+            "_scribd_expire": "1543629580",
         }
-        data = 'data'
+        data = "data"
 
         token_url = "https://www.scribd.com/read2/{}/access_token".format(self.book_id)
         token = requests.post(token_url, headers=headers, cookies=cookies, data=data)
