@@ -1,4 +1,4 @@
-__version__ = "1.1.0"
+from .version import __version__
 
 from .downloader import Downloader
 

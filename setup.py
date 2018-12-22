@@ -1,13 +1,17 @@
 #!/usr/bin/env python
 
 from setuptools import setup, find_packages
-import scribdl
+import os
+
+# __version__ comes into namespace from here
+with open(os.path.join("scribdl", "version.py")) as version_file:
+    exec(version_file.read())
 
 with open("README.rst", "r") as f:
     long_description = f.read()
 
 setup(name='scribd-downloader',
-      version=scribdl.__version__,
+      version=__version__,
       description='Download documents/text from scribd.com',
       long_description=long_description,
       author='Ritiek Malhotra',
@@ -21,7 +25,7 @@ setup(name='scribd-downloader',
       url='https://www.github.com/ritiek/scribd-downloader',
       keywords=['scribd-downloader', 'documents', 'command-line', 'python'],
       license='MIT',
-      download_url='https://github.com/ritiek/scribd-downloader/archive/v' + scribdl.__version__ + '.tar.gz',
+      download_url='https://github.com/ritiek/scribd-downloader/archive/v' + __version__ + '.tar.gz',
       classifiers=[],
       install_requires=[
             'requests',
