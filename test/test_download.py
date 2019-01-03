@@ -15,9 +15,9 @@ def test_book_download(cwd_to_tmpdir, monkeypatch):
     # We don't want to clutter stdout with book contents if this test fails
     monkeypatch.setattr("builtins.print", lambda x: None)
     md_book = book_downloader.download()
-    assert os.path.getsize(md_book.input_content) in range(120000, 160000)
+    assert os.path.getsize(md_book.input_content) in range(10000, 20000)
     md_book.to_pdf()
-    assert os.path.getsize(md_book.pdf_path) in range(350000, 400000)
+    assert os.path.getsize(md_book.pdf_path) in range(200000, 2500000)
 
 
 def test_text_document_download(cwd_to_tmpdir):
