@@ -28,9 +28,9 @@ setup(name='scribd-downloader',
       download_url='https://github.com/ritiek/scribd-downloader/archive/v' + __version__ + '.tar.gz',
       classifiers=[],
       install_requires=[
-            'requests',
-            'BeautifulSoup4',
-            'img2pdf',
-            'md2pdf'
+            'requests >= 2.19.1',
+            'BeautifulSoup4 >= 4.6.3',
+            'img2pdf >= 0.3.1',
+            'md2pdf >= 0.4'
       ]
      )
