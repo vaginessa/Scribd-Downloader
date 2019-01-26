@@ -23,9 +23,9 @@ class Downloader:
         self.url = url
         is_audiobook = self.is_audiobook()
         if is_audiobook:
-            is_book = self.is_book()
-        else:
             is_book = False
+        else:
+            is_book = self.is_book()
 
         self._is_audiobook = is_audiobook
         self._is_book = is_book
