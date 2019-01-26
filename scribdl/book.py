@@ -1,7 +1,7 @@
 import requests
 import json
 import os
-import shutil
+from . import internals
 
 from .base import ScribdBase
 
@@ -105,9 +105,7 @@ class ScribdBook(ScribdBase):
             os.makedirs(os.path.dirname(path))
         except OSError:
             pass
-        response = requests.get(url, stream=True)
-        with open(path, "wb") as out_file:
-            shutil.copyfileobj(response.raw, out_file)
+        internals.download_stream(url, path)
 
     def _extract_image_path_from_url(self, url):
         image_name = url.split("/")[-1].split("?token=")[0]

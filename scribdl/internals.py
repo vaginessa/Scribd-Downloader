@@ -1,4 +1,6 @@
+import requests
 import sys
+import shutil
 
 
 def fix_encoding(query):
@@ -25,3 +27,9 @@ def sanitize_title(title):
         title = title.replace(ch, replace_char)
 
     return title
+
+
+def download_stream(url, filepath):
+    response = requests.get(url, stream=True)
+    with open(filepath, "wb") as out_file:
+        shutil.copyfileobj(response.raw, out_file)

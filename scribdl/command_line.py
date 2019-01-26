@@ -26,14 +26,15 @@ def get_arguments():
         default=False,
     )
 
-    return parser.parse_args()
+    return parser
 
 
 def _command_line():
     """
     This function that gets executed when called via command-line.
     """
-    args = get_arguments()
+    parser = get_arguments()
+    args = parser.parse_args()
     url = args.url
     pdf = args.pdf
     images = args.images
