@@ -12,7 +12,7 @@ with open("README.rst", "r") as f:
 
 setup(name='scribd-downloader',
       version=__version__,
-      description='Download documents/text from scribd.com',
+      description='Download documents, books and audiobooks off Scribd',
       long_description=long_description,
       author='Ritiek Malhotra',
       author_email='ritiekmalhotra123@gmail.com',
