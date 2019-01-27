@@ -108,12 +108,15 @@ However, this also requires some experience on your side.
 
 When logged into your premium account on scribd on the web browser, setup a
 network proxy like Mitmproxy_ and install the SSL certificate so you can monitor HTTPS
-traffic passing through the browser. Now when reading some textual book on Scribd, your browser
+traffic passing through the browser.
+
+Now open any textual book URL (`example <https://www.scribd.com/read/189087235/Confessions-of-a-Casting-Director-Help-Actors-Land-Any-Role-with-Secrets-from-Inside-the-Audition-Room>`_) in your browser, your browser
 will automatically make network requests to a URL that looks something like https://www.scribd.com/read2/.../access_token.
 You need to inspect this network request, and replace the values for ``headers`` and
-``cookies`` in the code `here
-<https://github.com/ritiek/scribd-downloader/blob/9ab728f7cabd2d2a3708d758d4f7c209b7722a29/scribdl/book.py#L150-L156>`_.
-You should then be able to download full version of both textual books and audiobooks from Scribd using the tool.
+``cookies`` in the code `here <https://github.com/ritiek/scribd-downloader/blob/master/scribdl/const.py>`_.
+
+You should then be able to automatically download full version of both textual books and audiobooks
+from Scribd using the tool by running the commands as usual.
 
 ----------
 Disclaimer
@@ -138,3 +141,5 @@ License
 .. _Mitmproxy: https://github.com/mitmproxy/mitmproxy
 
 .. _Erik Fong: mailto:dlscrib@gmail.com
+.. _BookURL: https://www.scribd.com/read/189087235/Confessions-of-a-Casting-Director-Help-Actors-Land-Any-Role-with-Secrets-from-Inside-the-Audition-Room
+.. ConstantValues:
