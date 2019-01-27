@@ -6,8 +6,19 @@ Scribd-Downloader
 (I also found an online service https://dlscrib.com/ created by `Erik Fong`_. It doesn't
 use this script as some people seem to think!).
 
-This python script allows downloading of Scribd documents. It does not matter if the pages
-are blurred or require authentication, this script will still do its job.
+Current features:
+
++------------+-------------------------------------+-------------------------------------------+
+| Type       | Downloadable without Scribd premium | Requires Scribd premium for full download |
++============+=====================================+===========================================+
+| Documents  |                 Yes                 |                    No                     |
++------------+-------------------------------------+-------------------------------------------+
+| Books      |                 Yes                 |                    Yes                    |
++------------+-------------------------------------+-------------------------------------------+
+| Audiobooks |                 Yes                 |                    Yes                    |
++------------+-------------------------------------+-------------------------------------------+
+
+**Some information about Scribd documents:**
 
 There are two types of documents on Scribd:
 
@@ -87,22 +98,22 @@ The below command will generate an ``.md`` file of the book in the current worki
 
 Pass ``--pdf`` option to convert the generated output to a PDF.
 
---------------------------
-Downloading complete books
---------------------------
+-------------------------------------------------
+Downloading complete textual books and audiobooks
+-------------------------------------------------
 
 If you have a premium Scribd account, you can also download the full version of
-books by intercepting the network requests your browser makes. However, this also
-requires some experience on your side.
+textual books and audiobooks by intercepting the network requests your browser makes.
+However, this also requires some experience on your side.
 
 When logged into your premium account on scribd on the web browser, setup a
 network proxy like Mitmproxy_ and install the SSL certificate so you can monitor HTTPS
-traffic passing through the browser. Now when reading some book on Scribd, your browser
+traffic passing through the browser. Now when reading some textual book on Scribd, your browser
 will automatically make network requests to a URL that looks something like https://www.scribd.com/read2/.../access_token.
 You need to inspect this network request, and replace the values for ``headers`` and
 ``cookies`` in the code `here
 <https://github.com/ritiek/scribd-downloader/blob/9ab728f7cabd2d2a3708d758d4f7c209b7722a29/scribdl/book.py#L150-L156>`_.
-You should then be able to download full version of books from Scribd using the tool.
+You should then be able to download full version of both textual books and audiobooks from Scribd using the tool.
 
 ----------
 Disclaimer
