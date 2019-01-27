@@ -76,6 +76,8 @@ Usage
 Examples
 --------
 
+Scribd Documents
+----------------
 Downloading text from document containing selectable text:
 ::
    $ scribdl https://www.scribd.com/document/55949937/33-Strategies-of-War
@@ -89,14 +91,25 @@ Download document containing images; use the ``--images`` option (the tool canno
 
 (Images will be saved in the current working directory)
 
-If you have a premium scribd account, you can replace
-by mimicking itself as a premium user!
-It can now also download the preview version of books.
+Scribd Books
+------------
 The below command will generate an ``.md`` file of the book in the current working directory:
 ::
     $ scribdl https://www.scribd.com/read/189087235/Confessions-of-a-Casting-Director-Help-Actors-Land-Any-Role-with-Secrets-from-Inside-the-Audition-Room
 
 Pass ``--pdf`` option to convert the generated output to a PDF.
+
+This will only dowload the book content available without owning a premium account on Scribd.
+See the below section for downloading full books if you own a premium Scribd account.
+
+Scribd Audiobooks
+-----------------
+This will download .mp3 of the audiobook:
+::
+   $ https://www.scribd.com/audiobook/237606860/100-Ways-to-Motivate-Yourself-Change-Your-Life-Forever
+   
+This will only download the preview version of the audiobook. See the below section for
+downloading complete audiobooks if you own a premium Scribd account.
 
 -------------------------------------------------
 Downloading complete textual books and audiobooks
@@ -137,7 +150,7 @@ License
 
 .. |Build Status| image:: https://travis-ci.org/ritiek/scribd-downloader.svg?branch=master
    :target: https://travis-ci.org/ritiek/scribd-downloader
-   
+
 .. _Mitmproxy: https://github.com/mitmproxy/mitmproxy
 
 .. _Erik Fong: mailto:dlscrib@gmail.com
