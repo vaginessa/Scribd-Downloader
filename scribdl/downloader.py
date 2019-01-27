@@ -4,6 +4,7 @@ import requests
 from .document import ScribdTextualDocument
 from .document import ScribdImageDocument
 from .book import ScribdBook
+from .audiobook import ScribdAudioBook
 
 from .pdf_converter import ConvertToPDF
 
@@ -20,13 +21,24 @@ class Downloader:
 
     def __init__(self, url):
         self.url = url
-        self._is_book = self.is_book()
+        is_audiobook = self.is_audiobook()
+        if is_audiobook:
+            is_book = False
+        else:
+            is_book = self.is_book()
+
+        self._is_audiobook = is_audiobook
+        self._is_book = is_book
 
     def download(self, is_image_document=None):
         """
         Downloads books and documents from Scribd.
         Returns an object of `ConvertToPDF` class.
         """
+        if self._is_audiobook:
+            content = self._download_audiobook()
+            return content
+
         if self._is_book:
             content = self._download_book()
         else:
@@ -37,7 +49,6 @@ class Downloader:
                     "in the `image_document` parameter."
                 )
             content = self._download_document(is_image_document)
-
         return content
 
     def _download_book(self):
@@ -64,13 +75,31 @@ class Downloader:
         pdf_path = "{}.pdf".format(document.get_title())
         return ConvertToPDF(content_path, pdf_path)
 
+    def _download_audiobook(self):
+        """
+        Downloads audiobooks off Scribd.
+        Returns a list containing local audio filepaths.
+        """
+        audiobook = ScribdAudioBook(self.url)
+        playlist = audiobook.playlist
+        if not audiobook.premium_cookies:
+            print("Premium cookies not detected. Only the preview version of audiobook will be downloaded.")
+        playlist.download()
+        return playlist.download_paths
+
     def is_book(self):
         """
         Checks whether the passed URL points to a Scribd book
-        or a Scribd document
+        or a Scribd document.
         """
         response = requests.get(self.url)
         soup = BeautifulSoup(response.text, "html.parser")
         content_class = soup.find("body")["class"]
         matches_with_book = content_class[0] == "autogen_class_views_layouts_book_web"
         return matches_with_book
+
+    def is_audiobook(self):
+        """
+        Checks whether the passed URL points to a Scribd audiobook.
+        """
+        return "/audiobook/" in self.url

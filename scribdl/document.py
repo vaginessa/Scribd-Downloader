@@ -1,7 +1,6 @@
 from bs4 import BeautifulSoup
 import requests
 
-import shutil
 import os
 
 from abc import abstractmethod
@@ -201,6 +200,4 @@ class ScribdImageDocument(ScribdDocument):
             return
 
         url = self.convert_to_image_url(jsonp_url, found)
-        response = requests.get(url, stream=True)
-        with open(imagename, "wb") as out_file:
-            shutil.copyfileobj(response.raw, out_file)
+        internals.download_stream(url, imagename)

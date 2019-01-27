@@ -6,8 +6,19 @@ Scribd-Downloader
 (I also found an online service https://dlscrib.com/ created by `Erik Fong`_. It doesn't
 use this script as some people seem to think!).
 
-This python script allows downloading of Scribd documents. It does not matter if the pages
-are blurred or require authentication, this script will still do its job.
+Current features:
+
++------------+-------------------------------------+-------------------------------------------+
+| Type       | Downloadable without Scribd premium | Requires Scribd premium for full download |
++============+=====================================+===========================================+
+| Documents  |                 Yes                 |                    No                     |
++------------+-------------------------------------+-------------------------------------------+
+| Books      |                 Yes                 |                    Yes                    |
++------------+-------------------------------------+-------------------------------------------+
+| Audiobooks |                 Yes                 |                    Yes                    |
++------------+-------------------------------------+-------------------------------------------+
+
+**Some information about Scribd documents:**
 
 There are two types of documents on Scribd:
 
@@ -65,6 +76,8 @@ Usage
 Examples
 --------
 
+Scribd Documents
+----------------
 Downloading text from document containing selectable text:
 ::
    $ scribdl https://www.scribd.com/document/55949937/33-Strategies-of-War
@@ -78,31 +91,45 @@ Download document containing images; use the ``--images`` option (the tool canno
 
 (Images will be saved in the current working directory)
 
-If you have a premium scribd account, you can replace
-by mimicking itself as a premium user!
-It can now also download the preview version of books.
+Scribd Books
+------------
 The below command will generate an ``.md`` file of the book in the current working directory:
 ::
     $ scribdl https://www.scribd.com/read/189087235/Confessions-of-a-Casting-Director-Help-Actors-Land-Any-Role-with-Secrets-from-Inside-the-Audition-Room
 
 Pass ``--pdf`` option to convert the generated output to a PDF.
 
---------------------------
-Downloading complete books
---------------------------
+This will only dowload the book content available without owning a premium account on Scribd.
+See the below section for downloading full books if you own a premium Scribd account.
+
+Scribd Audiobooks
+-----------------
+This will download .mp3 of the audiobook:
+::
+   $ https://www.scribd.com/audiobook/237606860/100-Ways-to-Motivate-Yourself-Change-Your-Life-Forever
+   
+This will only download the preview version of the audiobook. See the below section for
+downloading complete audiobooks if you own a premium Scribd account.
+
+-------------------------------------------------
+Downloading complete textual books and audiobooks
+-------------------------------------------------
 
 If you have a premium Scribd account, you can also download the full version of
-books by intercepting the network requests your browser makes. However, this also
-requires some experience on your side.
+textual books and audiobooks by intercepting the network requests your browser makes.
+However, this also requires some experience on your side.
 
 When logged into your premium account on scribd on the web browser, setup a
 network proxy like Mitmproxy_ and install the SSL certificate so you can monitor HTTPS
-traffic passing through the browser. Now when reading some book on Scribd, your browser
+traffic passing through the browser.
+
+Now open any textual book URL (`example <https://www.scribd.com/read/189087235/Confessions-of-a-Casting-Director-Help-Actors-Land-Any-Role-with-Secrets-from-Inside-the-Audition-Room>`_) in your browser, your browser
 will automatically make network requests to a URL that looks something like https://www.scribd.com/read2/.../access_token.
 You need to inspect this network request, and replace the values for ``headers`` and
-``cookies`` in the code `here
-<https://github.com/ritiek/scribd-downloader/blob/9ab728f7cabd2d2a3708d758d4f7c209b7722a29/scribdl/book.py#L150-L156>`_.
-You should then be able to download full version of books from Scribd using the tool.
+``cookies`` in the code `here <https://github.com/ritiek/scribd-downloader/blob/master/scribdl/const.py>`_.
+
+You should then be able to automatically download full version of both textual books and audiobooks
+from Scribd using the tool by running the commands as usual.
 
 ----------
 Disclaimer
@@ -123,7 +150,9 @@ License
 
 .. |Build Status| image:: https://travis-ci.org/ritiek/scribd-downloader.svg?branch=master
    :target: https://travis-ci.org/ritiek/scribd-downloader
-   
+
 .. _Mitmproxy: https://github.com/mitmproxy/mitmproxy
 
 .. _Erik Fong: mailto:dlscrib@gmail.com
+.. _BookURL: https://www.scribd.com/read/189087235/Confessions-of-a-Casting-Director-Help-Actors-Land-Any-Role-with-Secrets-from-Inside-the-Audition-Room
+.. ConstantValues:

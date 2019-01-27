@@ -1,9 +1,10 @@
 import requests
 import json
 import os
-import shutil
 
 from .base import ScribdBase
+from . import internals
+from . import const
 
 
 class ScribdBook(ScribdBase):
@@ -105,9 +106,7 @@ class ScribdBook(ScribdBase):
             os.makedirs(os.path.dirname(path))
         except OSError:
             pass
-        response = requests.get(url, stream=True)
-        with open(path, "wb") as out_file:
-            shutil.copyfileobj(response.raw, out_file)
+        internals.download_stream(url, path)
 
     def _extract_image_path_from_url(self, url):
         image_name = url.split("/")[-1].split("?token=")[0]
@@ -147,13 +146,8 @@ class ScribdBook(ScribdBase):
         Fetches a uniquely generated token for the current
         session.
         """
-        headers = {
-            "X-CSRF-Token": "jfHAQ/LjqJAexQtAkCgWi0hif/sWHi5pXVAHCNsC3GkZocGcHcfETUhZ/Wd+YyY0tEH/zV/hRCOZhyq7ZewiMQ=="
-        }
-        cookies = {
-            "_scribd_session": "eyJzZXNzaW9uX2lkIjoiNTg3N2VjOTAwMGNmOTM5M2IwMGEwY2ExZmI2YTRiOTQiLCJfY3NyZl90b2tlbiI6ImxGQUIzKzhrYk4xV25QWW43a3N3di93amdEWkovMnBLeE5jdHM3N3UvbGc9IiwiciI6IjE1NDM2Mjk1ODAiLCJ3b3JkX2lkIjoyNjMzNjM2MzIsInAiOjE1NDI5MzQ4NDMsImxhc3RfcmVhdXRoIjoxNTQzNjI5NTgwfQ%3D%3D--4f34750fb7295b3b6f26754547c2e1e568da3e86",
-            "_scribd_expire": "1543629580",
-        }
+        headers = const.premium_headers
+        cookies = const.premium_cookies
         data = "data"
 
         token_url = "https://www.scribd.com/read2/{}/access_token".format(self.book_id)
