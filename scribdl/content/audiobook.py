@@ -3,8 +3,8 @@ import requests
 import json
 import re
 
-from . import internals
-from . import const
+from .. import internals
+from .. import const
 
 
 class Track:

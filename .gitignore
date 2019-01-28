@@ -3,6 +3,7 @@
 /*.jpg
 /*.jpeg
 /*.png
+/*.mp3
 
 *.pyc
 __pycache__/

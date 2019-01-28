@@ -4,8 +4,8 @@ import requests
 import os
 
 from abc import abstractmethod
-from .base import ScribdBase
-from . import internals
+from ..base import ScribdBase
+from .. import internals
 
 
 class ScribdDocument(ScribdBase):

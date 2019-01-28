@@ -2,9 +2,9 @@ import requests
 import json
 import os
 
-from .base import ScribdBase
-from . import internals
-from . import const
+from ..base import ScribdBase
+from .. import internals
+from .. import const
 
 
 class ScribdBook(ScribdBase):

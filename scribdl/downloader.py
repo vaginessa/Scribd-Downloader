@@ -1,10 +1,10 @@
 from bs4 import BeautifulSoup
 import requests
 
-from .document import ScribdTextualDocument
-from .document import ScribdImageDocument
-from .book import ScribdBook
-from .audiobook import ScribdAudioBook
+from .content.document import ScribdTextualDocument
+from .content.document import ScribdImageDocument
+from .content.book import ScribdBook
+from .content.audiobook import ScribdAudioBook
 
 from .pdf_converter import ConvertToPDF
 
