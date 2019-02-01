@@ -4,7 +4,7 @@ import requests
 import os
 
 from abc import abstractmethod
-from ..base import ScribdBase
+from .base import ScribdBase
 from .. import internals
 
 
@@ -18,31 +18,28 @@ class ScribdDocument(ScribdBase):
         A string containing Scribd document URL.
     """
 
-    def __init__(self, url):
-        self.url = url
-        response = requests.get(url)
-        self.soup = BeautifulSoup(response.text, "html.parser")
+    def __init__(self, document_url):
+        super().__init__(document_url)
+        self.url = document_url
+        self._jsonp_urls = None
+        self._hidden_soup = None
 
-    def get_title(self):
-        """
-        Scrapes the title of the Scribd document.
-        """
-        title = self.soup.find("title").get_text()
-        return internals.sanitize_title(title)
-
-    def _extract_all_jsonp_urls(self):
+    @property
+    def jsonp_urls(self):
         """
         Extracts all URLs ending with '.jsonp' by parsing the
         HTML code.
         """
-        js_text = self.soup.find_all("script", type="text/javascript")
-        jsonp_urls = []
-        for opening in js_text:
-            for inner_opening in opening:
-                jsonp = self._extract_jsonp_url(inner_opening)
-                if jsonp:
-                    jsonp_urls.append(jsonp)
-        return jsonp_urls
+        if not self._jsonp_urls:
+            js_text = self._soup.find_all("script", type="text/javascript")
+            jsonp_urls = []
+            for opening in js_text:
+                for inner_opening in opening:
+                    jsonp = self._extract_jsonp_url(inner_opening)
+                    if jsonp:
+                        jsonp_urls.append(jsonp)
+            self._jsonp_urls = jsonp_urls
+        return self._jsonp_urls
 
     def _extract_jsonp_url(self, inner_opening):
         """
@@ -60,7 +57,7 @@ class ScribdDocument(ScribdBase):
         return jsonp
 
     @abstractmethod
-    def get_content(self):
+    def download(self):
         """
         An abstract method which will fetch the actual content
         found in the '.jsonp' URLs.
@@ -71,36 +68,37 @@ class ScribdDocument(ScribdBase):
 class ScribdTextualDocument(ScribdDocument):
     """
     A class for downloading textual documents off Scribd.
+
+    Parameters
+    ----------
+    document_url : `str`
+        A string containing Scribd document URL.
     """
 
-    def get_content(self):
+    def __init__(self, document_url):
+        super().__init__(document_url)
+        self.filename = self.sanitized_title + ".md"
+
+    def download(self, filename=None):
         """
         Generates the filename and processes the text extraction
         to this file.
         """
-        title = self.get_title()
-        jsonp_urls = self._extract_all_jsonp_urls()
+        if not filename:
+            filename = self.filename
 
-        print("Extracting text to " + title + ".md\n")
-        filename = title + ".md"
-        self.text_extractor(jsonp_urls, filename)
+        print("Extracting text to", self.sanitized_title, "\n")
+        self._text_extractor(filename)
         return filename
 
-    def get_title(self):
-        """
-        Scrapes the title of the Scribd document.
-        """
-        title = self.soup.find("title").get_text()
-        return internals.sanitize_title(title)
-
-    def text_extractor(self, jsonp_urls, filename):
+    def _text_extractor(self, filename):
         """
         Saves text from every '.jsonp' URL.
         """
-        for jsonp_url in jsonp_urls:
-            self.save_text(jsonp_url, filename)
+        for jsonp_url in self.jsonp_urls:
+            self._save_text(jsonp_url, filename)
 
-    def save_text(self, jsonp, filename):
+    def _save_text(self, jsonp, filename):
         """
         Makes a GET request to the '.jsonp' URL and saves
         the text to the passed file.
@@ -129,36 +127,41 @@ class ScribdTextualDocument(ScribdDocument):
 class ScribdImageDocument(ScribdDocument):
     """
     A class for downloading image documents off Scribd.
+
+    Parameters
+    ----------
+    document_url : `str`
+        A string containing Scribd document URL.
     """
 
-    def get_content(self):
-        """
-        Processes the image extraction.
-        """
-        title = self.get_title()
-        jsonp_urls = self._extract_all_jsonp_urls()
+    def __init__(self, document_url):
+        super().__init__(document_url)
+        self._image_download_counter = 1
 
-        # sometimes images embedded directly in html as well
-        return self.image_extractor(jsonp_urls, title)
-
-    def get_title(self):
-        """
-        Scrapes the title of the Scribd document.
-        """
-        title = self.soup.find("title").get_text()
-        return internals.sanitize_title(title)
-
-    def image_extractor(self, jsonp_urls, initial_filename):
+    def download(self, initial_filename=None):
         """
         Function for downloading images off '.jsonp' URLs to
         filenames.
         """
-        downloaded_images = self._html_image_extractor(initial_filename)
-        found = len(downloaded_images) > 0
-        for jsonp_url in jsonp_urls:
-            filename = "{}_{}.jpg".format(initial_filename, len(downloaded_images) + 1)
-            self.save_image(jsonp_url, filename, found)
+        if not initial_filename:
+            initial_filename = self.sanitized_title
+
+        downloaded_html_images = self._html_image_extractor(initial_filename)
+        downloaded_jsonp_images = self._jsonp_image_extractor(initial_filename)
+        return downloaded_html_images + downloaded_jsonp_images
+
+    def _jsonp_image_extractor(self, initial_filename):
+        """
+        Extract images from extracted .jsonp URLs.
+        """
+        downloaded_images = []
+        found = self._image_download_counter > 1
+        for jsonp_url in self.jsonp_urls:
+            filename = "{}_{}.jpg".format(initial_filename, self._image_download_counter)
+            img_url = self._convert_jsonp_url_to_image_url(jsonp_url, found=found)
+            self._save_image(img_url, filename)
             downloaded_images.append(filename)
+            self._image_download_counter += 1
         return downloaded_images
 
     def _html_image_extractor(self, initial_filename):
@@ -167,37 +170,35 @@ class ScribdImageDocument(ScribdDocument):
         HTML page.
         """
         downloaded_images = []
-        absimg = self.soup.find_all("img", {"class": "absimg"}, src=True)
+        absimg = self._soup.find_all("img", {"class": "absimg"}, src=True)
         for img in absimg:
-            filename = "{}_{}.jpg".format(initial_filename, len(downloaded_images) + 1)
-            self.save_image(img["src"], filename, found=False)
+            filename = "{}_{}.jpg".format(initial_filename, self._image_download_counter)
+            self._save_image(img["src"], filename)
             downloaded_images.append(filename)
+            self._image_download_counter += 1
         return downloaded_images
 
-    def convert_to_image_url(self, url, found):
+    def _convert_jsonp_url_to_image_url(self, jsonp_url, found):
         """
         Gets the image URL corresponding to the '.jsonp' URL.
         """
-        if url.endswith(".jsonp"):
-            replacement = url.replace("/pages/", "/images/")
+        if jsonp_url.endswith(".jsonp"):
+            replacement = jsonp_url.replace("/pages/", "/images/")
             if found:
                 replacement = replacement.replace(".jsonp", "/000.jpg")
             else:
                 replacement = replacement.replace(".jsonp", ".jpg")
         else:
-            replacement = url
-
+            replacement = jsonp_url
         return replacement
 
-    def save_image(self, jsonp_url, imagename, found=False):
+    def _save_image(self, url, imagename):
         """
         Skips downloading if the image is already downloaded,
         otherwise downloads it locally.
         """
-        print("Downloading " + imagename)
+        print("Downloading", imagename)
         already_present = os.listdir(".")
         if imagename in already_present:
             return
-
-        url = self.convert_to_image_url(jsonp_url, found)
         internals.download_stream(url, imagename)

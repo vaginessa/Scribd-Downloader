@@ -57,8 +57,8 @@ class Downloader:
         Returns an object of `ConvertToPDF` class.
         """
         book = ScribdBook(self.url)
-        md_path = book.get_content()
-        pdf_path = "{}.pdf".format(book.get_id())
+        md_path = book.download()
+        pdf_path = "{}.pdf".format(book.book_id)
         return ConvertToPDF(md_path, pdf_path)
 
     def _download_document(self, image_document):
@@ -71,8 +71,8 @@ class Downloader:
         else:
             document = ScribdTextualDocument(self.url)
 
-        content_path = document.get_content()
-        pdf_path = "{}.pdf".format(document.get_title())
+        content_path = document.download()
+        pdf_path = "{}.pdf".format(document.sanitized_title)
         return ConvertToPDF(content_path, pdf_path)
 
     def _download_audiobook(self):

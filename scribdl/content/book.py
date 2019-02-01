@@ -2,7 +2,7 @@ import requests
 import json
 import os
 
-from ..base import ScribdBase
+from .base import ScribdBase
 from .. import internals
 from .. import const
 
@@ -17,35 +17,35 @@ class ScribdBook(ScribdBase):
         A string containing Scribd book URL.
     """
 
-    def __init__(self, url):
-        self.url = url
-        self.book_id = str(self.get_id())
+    def __init__(self, book_url):
+        super().__init__(book_url)
+        self.filename = self.sanitized_title + ".md"
+        self.url = book_url
+        self._book_id = None
 
-    def _extract_text(self, content, chapter, token):
+    @property
+    def book_id(self):
         """
-        Extracts text given a block of raw html.
+        Extracts the book ID.
         """
-        words = []
-        for word in content["words"]:
-            if word.get("break_map", None):
-                words.append(word["break_map"]["text"])
-            elif word.get("text", None):
-                words.append(word["text"])
-            elif word.get("type", None) == "image":
-                image_url = self._format_image_url(chapter, word["src"], token)
-                string_text = self._process_image_text(word, image_url)
-                words.append(string_text)
-            else:
-                words += self._extract_text(word, chapter, token)
-        return words
+        if not self._book_id:
+            splits = self.url.split("/")
+            for split in splits:
+                try:
+                    book_id = int(split)
+                except ValueError:
+                    continue
+            self._book_id = book_id
+        return self._book_id
 
-    def get_content(self):
+    def download(self, filename=None):
         """
         Processing text and image extraction.
         """
-        token = self._get_token()
+        if not filename:
+            filename = self.filename
 
-        filename = self.book_id + ".md"
+        token = self._get_token()
         chapter = 1
 
         while True:
@@ -70,6 +70,24 @@ class ScribdBook(ScribdBase):
             chapter += 1
 
         return filename
+
+    def _extract_text(self, content, chapter, token):
+        """
+        Extracts text given a block of raw html.
+        """
+        words = []
+        for word in content["words"]:
+            if word.get("break_map", None):
+                words.append(word["break_map"]["text"])
+            elif word.get("text", None):
+                words.append(word["text"])
+            elif word.get("type", None) == "image":
+                image_url = self._format_image_url(chapter, word["src"], token)
+                string_text = self._process_image_text(word, image_url)
+                words.append(string_text)
+            else:
+                words += self._extract_text(word, chapter, token)
+        return words
 
     def fetch_response(self, chapter, token):
         url = self._format_content_url(chapter, token)
@@ -96,7 +114,7 @@ class ScribdBook(ScribdBase):
 
     def _process_image_text(self, block, image_url):
         image_name = block["src"].replace("images/", "")
-        image_path = os.path.join(self.book_id, image_name)
+        image_path = os.path.join(self.sanitized_title, image_name)
         self._download_image(image_url, image_path)
         string_text = "![{}]({})\n\n".format(image_name, image_path)
         return string_text
@@ -129,18 +147,6 @@ class ScribdBook(ScribdBase):
         unformatted_url = "https://www.scribd.com/scepub/{}/chapters/{}/" "{}?token={}"
         return unformatted_url.format(self.book_id, chapter, image, token)
 
-    def get_id(self):
-        """
-        Extracts the book ID.
-        """
-        splits = self.url.split("/")
-        for split in splits:
-            try:
-                book_id = int(split)
-            except ValueError:
-                continue
-        return book_id
-
     def _get_token(self):
         """
         Fetches a uniquely generated token for the current
@@ -156,7 +162,7 @@ class ScribdBook(ScribdBase):
 
     def save_text(self, string_text, filename):
         """
-        Writes text to the passed file.
+        Appends text to the passed file.
         """
         with open(filename, "a") as f:
             f.write(string_text)

@@ -2,6 +2,8 @@ import requests
 import sys
 import shutil
 
+GITHUB_URL_BASE = "https://github.com/ritiek/scribd-downloader"
+
 
 def fix_encoding(query):
     """
@@ -30,6 +32,9 @@ def sanitize_title(title):
 
 
 def download_stream(url, filepath):
+    """
+    Stream stuff from the Internet to a local file.
+    """
     response = requests.get(url, stream=True)
     with open(filepath, "wb") as out_file:
         shutil.copyfileobj(response.raw, out_file)

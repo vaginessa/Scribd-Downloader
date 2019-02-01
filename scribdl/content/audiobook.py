@@ -3,8 +3,10 @@ import requests
 import json
 import re
 
+from .base import ScribdBase
 from .. import internals
 from .. import const
+from .. import exceptions
 
 
 class Track:
@@ -48,6 +50,7 @@ class Playlist:
 
     def __init__(self, title, playlist):
         self.title = title
+        self.sanitized_title = internals.sanitize_title(title)
         self.tracks = [ Track(track) for track in playlist["playlist"] ]
         self._playlist = playlist
         self.download_paths = []
@@ -56,9 +59,8 @@ class Playlist:
         """
         Downloads all the chapters available in the playlist.
         """
-        title = self.title
         for track in self.tracks:
-            path = "{0}_{1}.mp3".format(title, track.chapter_number)
+            path = "{0}_{1}.mp3".format(self.sanitized_title, track.chapter_number)
             dl_str = 'Downloading chapter-{0} ({1}) to "{2}"'.format(track.chapter_number,
                                                                    track.url,
                                                                    path)
@@ -67,7 +69,7 @@ class Playlist:
             self.download_paths.append(path)
 
 
-class ScribdAudioBook:
+class ScribdAudioBook(ScribdBase):
     """
     A base class for downloading audiobooks off Scribd.
 
@@ -78,6 +80,7 @@ class ScribdAudioBook:
     """
 
     def __init__(self, audiobook_url):
+        super().__init__(audiobook_url)
         scribd_id_search = re.search("[0-9]{9}", audiobook_url)
         scribd_id = scribd_id_search.group()
 
@@ -89,7 +92,6 @@ class ScribdAudioBook:
         self._license_id = None
         self._playlist_url = None
         self._authenticate_url = None
-        self._title = None
         self._playlist = None
 
         self.audiobook_url = audiobook_url
@@ -156,10 +158,7 @@ class ScribdAudioBook:
         the audiobook content from http://api.findawayworld.com/.
         """
         if not self._license_id:
-            requests.get(self.authenticate_url, cookies=self.cookies)
-            response = requests.get(self.license_url, headers=self.session_key_header)
-            response_dict = json.loads(response.text)
-            self._license_id = response_dict["licenses"][0]["id"]
+            self._license_id = self._get_license_id()
         return self._license_id
 
     @property
@@ -191,17 +190,6 @@ class ScribdAudioBook:
         return bool(self.author_id)
 
     @property
-    def title(self):
-        """
-        Scrapes the title of the Scribd document.
-        """
-        if not self._title:
-            splits = self.audiobook_url.split("/")
-            splits.remove("")
-            self._title = splits[-1].replace("-", " ")
-        return self._title
-
-    @property
     def playlist(self):
         """
         Returns a `Playlist` object.
@@ -209,6 +197,28 @@ class ScribdAudioBook:
         if not self._playlist:
             self._playlist = Playlist(self.title.replace(" ", "_"), self.make_playlist())
         return self._playlist
+
+    def _get_license_id(self, retries=3):
+        """
+        Scrapes the License-ID for the audiobook. We need to handle retries
+        as Scribd can sometimes fail to deliver the License-ID in the HTML.
+        """
+        requests.get(self.authenticate_url, cookies=self.cookies)
+        response = requests.get(self.license_url, headers=self.session_key_header)
+        response_dict = json.loads(response.text)
+        try:
+            license_id = response_dict["licenses"][0]["id"]
+        except KeyError:
+            if retries <= 0:
+                raise exceptions.ScribdFetchError("Maximum retries exceeded. Unable to fetch the "
+                                                  "License ID for the audiobook. Report this issue "
+                                                  "at {}/issues/".format(internals.GITHUB_URL_BASE)) from None
+            return self._get_license_id(retries=retries-1)
+        else:
+            return license_id
+
+    def download(self):
+        raise NotImplementedError("Use method `ScribdAudioBook.playlist.download` instead.")
 
     def _scrape_audiobook(self):
         """

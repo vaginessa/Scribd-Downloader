@@ -13,7 +13,7 @@ def test_audiobook_download(cwd_to_tmpdir, monkeypatch):
     audiobook_url = "https://www.scribd.com/audiobook/237606860/100-Ways-to-Motivate-Yourself-Change-Your-Life-Forever"
     audiobook_downloader = Downloader(audiobook_url)
     audio = audiobook_downloader.download()
-    assert audio[0] == "100_Ways_to_Motivate_Yourself_Change_Your_Life_Forever_preview.mp3"
+    assert audio[0] == "100_Ways_to_Motivate_Yourself__Change_Your_Life_Forever_preview.mp3"
     assert os.path.getsize(audio[0]) == 2127830
 
 
