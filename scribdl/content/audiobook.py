@@ -195,7 +195,7 @@ class ScribdAudioBook(ScribdBase):
         Returns a `Playlist` object.
         """
         if not self._playlist:
-            self._playlist = Playlist(self.title.replace(" ", "_"), self.make_playlist())
+            self._playlist = Playlist(self.title, self.make_playlist())
         return self._playlist
 
     def _get_license_id(self, retries=3):
@@ -213,7 +213,7 @@ class ScribdAudioBook(ScribdBase):
                 raise exceptions.ScribdFetchError("Maximum retries exceeded. Unable to fetch the "
                                                   "License ID for the audiobook. Report this issue "
                                                   "at {}/issues/".format(internals.GITHUB_URL_BASE)) from None
-            return self._get_license_id(retries=retries-1)
+            return ScribdAudioBook(self.url)._get_license_id(retries=retries-1)
         else:
             return license_id
 
