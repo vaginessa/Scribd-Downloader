@@ -106,7 +106,7 @@ Scribd Audiobooks
 -----------------
 This will download .mp3 of the audiobook:
 ::
-   $ https://www.scribd.com/audiobook/237606860/100-Ways-to-Motivate-Yourself-Change-Your-Life-Forever
+   $ scribdl https://www.scribd.com/audiobook/237606860/100-Ways-to-Motivate-Yourself-Change-Your-Life-Forever
    
 This will only download the preview version of the audiobook. See the below section for
 downloading complete audiobooks if you own a premium Scribd account.
