@@ -1,7 +1,7 @@
 Scribd-Downloader
 =================
 
-|PyPi Version| |Build Status|
+|PyPi Version| |Build Status| |Coverage Status|
 
 (I also found an online service https://dlscrib.com/ created by `Erik Fong`_. It doesn't
 use this script as some people seem to think!).
@@ -87,7 +87,7 @@ working directory)
 
 Download document containing images; use the ``--images`` option (the tool cannot figure out this on its own):
 ::
-    $ scribdl -i http://scribd.com/doc/17142797/Case-in-Point
+    $ scribdl -i https://scribd.com/doc/17142797/Case-in-Point
 
 (Images will be saved in the current working directory)
 
@@ -150,6 +150,9 @@ License
 
 .. |Build Status| image:: https://travis-ci.org/ritiek/scribd-downloader.svg?branch=master
    :target: https://travis-ci.org/ritiek/scribd-downloader
+
+.. |Coverage Status| image:: https://codecov.io/gh/ritiek/scribd-downloader/branch/master/graph/badge.svg
+   :target: https://codecov.io/gh/ritiek/scribd-downloader
 
 .. _Mitmproxy: https://github.com/mitmproxy/mitmproxy
 

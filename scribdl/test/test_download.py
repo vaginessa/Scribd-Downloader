@@ -1,4 +1,4 @@
-from scribdl.downloader import Downloader
+from ..downloader import Downloader
 import os
 
 import pytest

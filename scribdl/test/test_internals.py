@@ -1,5 +1,4 @@
-from scribdl.internals import sanitize_title
-from scribdl import internals
+from .. import internals
 
 import pytest
 

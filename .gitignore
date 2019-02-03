@@ -12,3 +12,4 @@ scribd_downloader.egg-info/
 build/
 dist/
 .pytest_cache/
+.coverage

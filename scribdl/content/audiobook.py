@@ -96,6 +96,8 @@ class ScribdAudioBook(ScribdBase):
 
         self.audiobook_url = audiobook_url
         self.scribd_id = scribd_id
+        # This session key used by Scribd to communicate with https://api.findawayworld.com/
+        # and remains constant always
         self.session_key_header = {"Session-Key": "acea0b1d-62b9-4fb7-960b-06d9fbb4999d"}
 
         # Replace these cookie values with ones generated when logged into a
@@ -158,7 +160,10 @@ class ScribdAudioBook(ScribdBase):
         the audiobook content from http://api.findawayworld.com/.
         """
         if not self._license_id:
-            self._license_id = self._get_license_id()
+            try:
+                self._license_id = self._get_license_id()
+            except exceptions.ScribdFetchError:
+                self._license_id = None
         return self._license_id
 
     @property
@@ -187,7 +192,11 @@ class ScribdAudioBook(ScribdBase):
         Returns a boolean based on whether the user is authenticated
         with a premium Scribd account.
         """
-        return bool(self.author_id)
+        try:
+            premium_cookies = bool(self.license_id)
+        except exceptions.ScribdFetchError:
+            premium_cookies = False
+        return premium_cookies
 
     @property
     def playlist(self):
@@ -195,10 +204,10 @@ class ScribdAudioBook(ScribdBase):
         Returns a `Playlist` object.
         """
         if not self._playlist:
-            self._playlist = Playlist(self.title.replace(" ", "_"), self.make_playlist())
+            self._playlist = Playlist(self.title, self.make_playlist())
         return self._playlist
 
-    def _get_license_id(self, retries=3):
+    def _get_license_id(self):
         """
         Scrapes the License-ID for the audiobook. We need to handle retries
         as Scribd can sometimes fail to deliver the License-ID in the HTML.
@@ -209,11 +218,8 @@ class ScribdAudioBook(ScribdBase):
         try:
             license_id = response_dict["licenses"][0]["id"]
         except KeyError:
-            if retries <= 0:
-                raise exceptions.ScribdFetchError("Maximum retries exceeded. Unable to fetch the "
-                                                  "License ID for the audiobook. Report this issue "
-                                                  "at {}/issues/".format(internals.GITHUB_URL_BASE)) from None
-            return self._get_license_id(retries=retries-1)
+            raise exceptions.ScribdFetchError("Unable to fetch the License ID for the audiobook. This attribute"
+                                              "is only available when using a premium Scribd account.")
         else:
             return license_id
 
