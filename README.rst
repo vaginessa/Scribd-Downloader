@@ -87,7 +87,7 @@ working directory)
 
 Download document containing images; use the ``--images`` option (the tool cannot figure out this on its own):
 ::
-    $ scribdl -i http://scribd.com/doc/17142797/Case-in-Point
+    $ scribdl -i https://scribd.com/doc/17142797/Case-in-Point
 
 (Images will be saved in the current working directory)
 
