@@ -42,8 +42,7 @@ class TestScribdAudioBook:
         assert scribd_audiobook.license_url == "https://api.findawayworld.com/v4/accounts/scribd-None/audiobooks/19991"
 
     def test_license_id(self, scribd_audiobook):
-        with pytest.raises(exceptions.ScribdFetchError):
-            x = scribd_audiobook.license_id
+        assert scribd_audiobook.license_id == None
 
 
 class TestPlaylist:
