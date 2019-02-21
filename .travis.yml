@@ -1,0 +1,16 @@
+dist: xenial
+language: python
+sudo: required
+python:
+  - "3.4"
+  - "3.5"
+  - "3.6"
+  - "3.7"
+before_install:
+  - pip install pytest-cov
+install:
+  - pip install -e .
+script: python -m pytest scribdl --cov=.
+after_success:
+  - pip install codecov
+  - codecov
