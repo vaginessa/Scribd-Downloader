@@ -10,11 +10,11 @@ import os
 os.chdir(sys.path[0])
 
 if len(sys.argv) ==1:
-	print('Usage: sudo python scribd.py <link of scribd document>') 
-	print('For selectable PDFs:') 
-	print('- example: sudo python scribd.py https://www.scribd.com/document/55949937/33-Strategies-of-War') 
-	print('For PDFs containing Images; use the -p option:') 
-	print('- example: sudo python scribd.py http://scribd.com/doc/17142797/Case-in-Point -p') 
+	print("Usage: sudo python scribd.py <link of scribd document>") 
+	print("For selectable PDFs:") 
+	print("example: sudo python scribd.py https://www.scribd.com/document/55949937/33-Strategies-of-War") 
+	print("For PDFs containing Images; use the -p option:") 
+	print("example: sudo python scribd.py http://scribd.com/doc/17142797/Case-in-Point -p") 
 	exit()
 
 response = requests.request(method='GET', url=sys.argv[1])
